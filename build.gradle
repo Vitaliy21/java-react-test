@@ -1,0 +1,9 @@
+allprojects  {
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+    group 'com.react.test'
+    version '1.0-SNAPSHOT'
+}
+subprojects {
+    
+}
