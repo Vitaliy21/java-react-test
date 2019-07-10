@@ -1,0 +1,24 @@
+# Intellij
+.idea/
+*.iml
+*.iws
+/*.iml
+/.idea/
+/target/*
+*.pyc
+*/target/*
+# Eclipse
+.classpath
+.project
+.settings
+.gradle
+**/build/*
+classes/*
+**/out/*
+peoplesoft-connector/application.yml
+application-fiu.yml
+application-asu.yml
+application-jmu.yml
+application-nwtc.yml
+config/*.yml
+
