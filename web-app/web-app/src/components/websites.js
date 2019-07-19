@@ -50,6 +50,8 @@ class Websites extends React.Component {
 			<div id="container">
 				<Link to="/create">Add Website</Link>
 				<p/>
+				<Link to="/register">Register user</Link>
+				<p/>
 				<table>
 					<thead>
 						<tr>
@@ -82,6 +84,8 @@ class Websites extends React.Component {
 						}
 					</tbody>
 				</table>
+				<Link to="/login">Login</Link>
+                <p/>
 			</div>
 		)
 	}
