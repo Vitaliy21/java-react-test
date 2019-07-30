@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-class Create extends React.Component {
+class Register extends React.Component {
   constructor(props) {
     super(props);
     this.state = {username: '', token:'', password:''};
@@ -19,8 +19,9 @@ class Create extends React.Component {
 	  fetch('http://localhost:9999/user/register', {
 			method: 'POST',
 			body: JSON.stringify({
-							title: this.state.title,
-							url: this.state.url
+							username: this.state.username,
+							token: this.state.token,
+							password: this.state.password,
 			}),
 			headers: {
 							"Content-type": "application/json; charset=UTF-8"
@@ -58,4 +59,4 @@ class Create extends React.Component {
   }
 }
 
-export default Create;
+export default Register;

@@ -16,14 +16,23 @@ public class UserReactController {
     private UserService userService;
 
     @PostMapping("/user/register")
-    public ResponseEntity<Void> addUser(@RequestBody UserDto userDto) throws Exception {
+    public ResponseEntity<Void> addUser(@RequestBody UserDto userDto) {
         userService.addUser(userDto);
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/user/login")
+    public ResponseEntity<UserDto> login(@RequestBody UserDto userDto) {
+        UserDto user = new UserDto();
+        user.setId(1);
+        user.setUsername("test user");
+        user.setPassword("test password");
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @GetMapping("/user/search/{username}")
-    public ResponseEntity<UserDto> getUser(@PathVariable String username) throws Exception {
-        return new ResponseEntity<UserDto>(userService.getUser(username), HttpStatus.OK);
+    public ResponseEntity<UserDto> getUser(@PathVariable String username) {
+        return new ResponseEntity<>(userService.getUser(username), HttpStatus.OK);
     }
 
 }
