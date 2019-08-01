@@ -1,9 +1,0 @@
-server:
-  port: 9999
-management:
-  endpoints:
-    web:
-      base-path: "/"
-logging:
-  level:
-    root: INFO
