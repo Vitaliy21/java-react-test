@@ -8,6 +8,7 @@ import Register from './components/register';
 import Login from './components/login';
 import Update from './components/update';
 import Welcome from './components/welcome';
+import Users from './components/users';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
@@ -19,6 +20,7 @@ ReactDOM.render(
 			<Route path='/login' component={Login} />
 			<Route path='/update/:id' component={Update} />
 			<Route path='/welcome' component={Welcome} />
+			<Route path='/users' component={Users} />
 		</div>
 	</Router>,
 document.getElementById('root'));

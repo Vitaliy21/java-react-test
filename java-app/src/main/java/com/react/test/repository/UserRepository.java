@@ -1,23 +1,48 @@
 package com.react.test.repository;
 
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import com.react.test.config.AppConfiguration;
 import com.react.test.dto.UserDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.UUID;
 
 @Component
 public class UserRepository {
-    private static final Map<String, UserDto> USERS = new HashMap<>();
-    private static Integer counter = 0;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserRepository.class);
+
+    private MongoTemplate mongoTemplate;
+    @Autowired
+    private AppConfiguration configuration;
+
+    @Autowired
+    public void setMongoTemplate() {
+        mongoTemplate = new MongoTemplate(new MongoClient(
+                new MongoClientURI(configuration.getMongoUri())), configuration.getMongoUsersDbName());
+    }
 
     public void addUser(UserDto userDto) {
-        counter++;
-        userDto.setId(counter);
-        USERS.put(userDto.getUsername(), userDto);
+        userDto.setId(UUID.randomUUID().toString());
+        mongoTemplate.insert(userDto, configuration.getMongoUsersCollectionName());
+        LOGGER.info("user has been successfully added");
     }
 
     public UserDto findByUsername(String username) {
-        return USERS.get(username);
+        Query query = Query.query(Criteria.where("username").is(username));
+        List<UserDto> result = mongoTemplate.find(query, UserDto.class, configuration.getMongoUsersCollectionName());
+        return result.isEmpty() ? null : result.get(0);
+    }
+
+    public List<UserDto> getAllUsers() {
+        return mongoTemplate.findAll(UserDto.class, configuration.getMongoUsersCollectionName());
     }
 }

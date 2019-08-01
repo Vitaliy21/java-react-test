@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 class Welcome extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {date: new Date(), name: 'World'}
+        this.state = {date: new Date()}
       }
 
 
@@ -26,10 +26,8 @@ class Welcome extends React.Component {
       }
 
     render() {
-//        return <h1>Hello World</h1>
-//        return <h1>Привет, {this.state.name}</h1>;
         return (<div>
-                    <h1>Привет, {this.props.location.state.detail.username}!</h1>
+                    <h1>Привет, {this.props.location.state.detail}!</h1>
                     <h2>Сейчас {this.state.date.toLocaleTimeString()}.</h2>
                 </div>
         );

@@ -86,6 +86,8 @@ class Websites extends React.Component {
 				</table>
 				<Link to="/login">Login</Link>
                 <p/>
+                <Link to="/users">See all users</Link>
+                <p/>
 			</div>
 		)
 	}

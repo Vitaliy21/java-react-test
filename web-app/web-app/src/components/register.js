@@ -28,8 +28,12 @@ class Register extends React.Component {
 			}
 		}).then(response => {
 				if(response.status === 200) {
-					alert("New User saved successfully");
+					return "New User saved successfully";
+				} else {
+				    return response.text();
 				}
+			}).then(result => {
+                alert(result)
 			});
   }
   render() {
@@ -40,15 +44,15 @@ class Register extends React.Component {
 			  <form onSubmit={this.handleSubmit}>
 				<p>
 					<label>Username:</label>
-					<input type="text" name="username" value={this.state.title} onChange={this.handleChange} placeholder="Username" />
+					<input type="text" name="username" value={this.state.username} onChange={this.handleChange} placeholder="Username" />
 				</p>
 				<p>
                     <label>Token:</label>
-                    <input type="text" name="token" value={this.state.url} onChange={this.handleChange} placeholder="Token" />
+                    <input type="text" name="token" value={this.state.token} onChange={this.handleChange} placeholder="Token" />
                 </p>
 				<p>
 					<label>Password:</label>
-					<input type="text" name="password" value={this.state.url} onChange={this.handleChange} placeholder="Password" />
+					<input type="text" name="password" value={this.state.password} onChange={this.handleChange} placeholder="Password" />
 				</p>
 				<p>
 					<input type="submit" value="Register" />

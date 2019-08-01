@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+var redirect = false;
+
 class Login extends React.Component {
   constructor(props) {
     super(props);
@@ -19,22 +21,26 @@ class Login extends React.Component {
 	  fetch('http://localhost:9999/user/login', {
 			method: 'POST',
 			body: JSON.stringify({
-							title: this.state.title,
-							url: this.state.url
+							username: this.state.username,
+							password: this.state.password
 			}),
 			headers: {
 							"Content-type": "application/json; charset=UTF-8"
 			}
 		}).then(response => {
         		if(response.status === 200) {
+        		    redirect = true;
                     return response.json();
         		} else {
-        			alert("wrong login or password");
-        			return null;
+//        			alert(response.status);
+//                    alert(response.statusText);
+                    redirect = false;
+        			return response.text();
         		}
         }).then(result => {
-                if (result == null) {
+                if (redirect == false) {
                     console.log(result);
+                    alert(result)
                 } else {
                     console.log(result);
                     this.props.history.push({
@@ -54,11 +60,11 @@ class Login extends React.Component {
 			  <form onSubmit={this.handleSubmit}>
 				<p>
 					<label>Username:</label>
-					<input type="text" name="username" value={this.state.title} onChange={this.handleChange} placeholder="Username" />
+					<input type="text" name="username" value={this.state.username} onChange={this.handleChange} placeholder="Username" />
 				</p>
 				<p>
 					<label>Password:</label>
-					<input type="text" name="password" value={this.state.url} onChange={this.handleChange} placeholder="Password" />
+					<input type="text" name="password" value={this.state.password} onChange={this.handleChange} placeholder="Password" />
 				</p>
 				<p>
 					<input type="submit" value="Login"/>

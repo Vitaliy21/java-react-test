@@ -7,3 +7,7 @@ management:
 logging:
   level:
     root: INFO
+mongoDb:
+  mongoUsersDbName: "users"
+  mongoUsersCollectionName: "users"
+  uri: "mongodb://localhost:27017"

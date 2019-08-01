@@ -1,16 +1,16 @@
 package com.react.test.dto;
 
 public class UserDto {
-    private Integer id;
+    private String id;
     private String username;
     private String token;
     private String password;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
