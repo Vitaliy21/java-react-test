@@ -2,18 +2,34 @@ package com.react.test.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @ConfigurationProperties
 public class AppConfiguration {
 
+    private RestTemplate restTemplate;
+//    ObjectMapper objectMapper;
+
     @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
+    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+        this.restTemplate = builder
+                .messageConverters(new MappingJackson2HttpMessageConverter())
+                .interceptors(new CustomClientHttpRequestInterceptor())
+                .build();
+        return restTemplate;
     }
+
+//    @Bean
+//    public ObjectMapper objectMapper() {
+//        this.objectMapper = new ObjectMapper();
+//        return objectMapper;
+//    }
+
 
     @Value("${mongoDb.uri:#{null}}")
     private String mongoUri;
@@ -40,5 +56,22 @@ public class AppConfiguration {
     }
     public void setMongoUsersCollectionName(String mongoUsersCollectionName) {
         this.mongoUsersCollectionName = mongoUsersCollectionName;
+    }
+
+    @Value("${mongoDb.mongoStatementsDbName:#{null}}")
+    private String mongoStatementsDbName;
+    public RestTemplate getRestTemplate() {
+        return restTemplate;
+    }
+    public void setRestTemplate(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
+    public String getMongoStatementsDbName() {
+        return mongoStatementsDbName;
+    }
+
+    public void setMongoStatementsDbName(String mongoStatementsDbName) {
+        this.mongoStatementsDbName = mongoStatementsDbName;
     }
 }

@@ -1,6 +1,8 @@
 package com.react.test.service;
 
+import com.react.test.dto.StatementResponseDto;
 import com.react.test.dto.UserDto;
+import com.react.test.repository.StatementRepository;
 import com.react.test.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,10 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private RemoteService remoteService;
+    @Autowired
+    private StatementRepository statementRepository;
 
     public List<UserDto> getAllUsers() {
         return userRepository.getAllUsers();
@@ -45,15 +51,20 @@ public class UserService {
         }
     }
 
-    public List<String> getUserData(UserDto user) throws Exception {
-        List<String> result = new ArrayList<>(Arrays.asList("item1", "item2", "item3"));
+    public List<StatementResponseDto> getUserData(UserDto user) throws Exception {
+//        List<String> result = new ArrayList<>(Arrays.asList("item1", "item2", "item3"));
         UserDto userFromDb = getUser(user.getUsername());
-
         if (!user.getPassword().equals(userFromDb.getPassword())) {
             throw new Exception("Wrong password");
         }
 
-        return result;
+        List<StatementResponseDto> remoteResponse = remoteService.getRemoteUserStatement("0",
+                "1562420985", "1565012959", "uOwuzdeE-0NZ6sZsrC59qyWq3IkWPCb-AF6dIANhPioE");
+
+        //insert remote response to db
+        statementRepository.saveStatements(user.getUsername(), remoteResponse);
+
+        return remoteResponse;
     }
 
 }

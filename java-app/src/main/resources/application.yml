@@ -9,5 +9,6 @@ logging:
     root: INFO
 mongoDb:
   mongoUsersDbName: "users"
+  mongoStatementsDbName: "statements"
   mongoUsersCollectionName: "users"
   uri: "mongodb://localhost:27017"

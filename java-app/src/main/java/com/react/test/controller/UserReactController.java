@@ -1,5 +1,6 @@
 package com.react.test.controller;
 
+import com.react.test.dto.StatementResponseDto;
 import com.react.test.dto.UserDto;
 import com.react.test.service.UserService;
 import org.slf4j.Logger;
@@ -37,14 +38,14 @@ public class UserReactController {
 
     @PostMapping("/user/login")
     public ResponseEntity<?> login(@RequestBody UserDto userDto) {
-        List<String> result;
+        List<StatementResponseDto> result;
         try {
             result = userService.getUserData(userDto);
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
         }
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return new ResponseEntity<>(result.get(0), HttpStatus.OK);
     }
 
     @GetMapping("/user/search/{username}")
