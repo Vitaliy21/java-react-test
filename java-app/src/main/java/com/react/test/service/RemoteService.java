@@ -28,7 +28,7 @@ public class RemoteService {
         headers.set("X-Token", token);
         HttpEntity entity = new HttpEntity(headers);
         ResponseEntity<List> response = restTemplate.exchange(url, GET, entity, List.class);
-
-        return response.getBody();
+        List<StatementResponseDto> result = (List<StatementResponseDto>)response.getBody();
+        return result;
     }
 }

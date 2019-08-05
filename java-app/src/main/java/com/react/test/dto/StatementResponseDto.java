@@ -14,6 +14,7 @@ public class StatementResponseDto {
     private Double commissionRate;
     private Double cashbackAmount;
     private Double balance;
+    private CategoryType categoryType;
 
     public String getId() {
         return id;
@@ -101,5 +102,13 @@ public class StatementResponseDto {
 
     public void setBalance(Double balance) {
         this.balance = balance;
+    }
+
+    public CategoryType getCategoryType() {
+        return categoryType;
+    }
+
+    public void setCategoryType(CategoryType categoryType) {
+        this.categoryType = categoryType;
     }
 }
