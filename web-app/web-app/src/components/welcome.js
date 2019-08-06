@@ -6,7 +6,7 @@ class Welcome extends React.Component {
         super(props);
         this.state = {date: new Date(),
                       user: {username: '', token: '', password: ''},
-                      details: {RESTAURANTS: 0, SUPERMARKETS: 0, TAXI: 0, FUN: 0, UNDEFINED: 0}
+                      details: {RESTAURANTS: 0, SUPERMARKETS: 0, TAXI: 0, FUN: 0, OTHER: 0, UNDEFINED: 0}
                       }
       }
 
@@ -39,13 +39,19 @@ class Welcome extends React.Component {
       }
 
     render() {
-        return (<div id='head'>
+        return (<div id='head' align='center'>
                     <h1>Привет, {this.state.user.username}!</h1>
-                    <h1>Сейчас {this.state.date.toLocaleTimeString()}.</h1>
+                    <h1>Сегодня {this.state.date.toLocaleDateString()}.   Сейчас {this.state.date.toLocaleTimeString()}.</h1>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
                     <h2>RESTAURANTS -> {this.state.details.RESTAURANTS}</h2>
                     <h2>SUPERMARKETS -> {this.state.details.SUPERMARKETS}</h2>
                     <h2>TAXI -> {this.state.details.TAXI}</h2>
                     <h2>FUN -> {this.state.details.FUN}</h2>
+                    <h2>OTHER -> {this.state.details.OTHER}</h2>
                     <h2>UNDEFINED -> {this.state.details.UNDEFINED}</h2>
                 </div>
         );
