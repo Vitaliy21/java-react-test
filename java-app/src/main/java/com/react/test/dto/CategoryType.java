@@ -5,5 +5,6 @@ public enum CategoryType {
     SUPERMARKETS,
     TAXI,
     FUN,
+    OTHER,
     UNDEFINED
 }
