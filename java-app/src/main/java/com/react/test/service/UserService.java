@@ -5,10 +5,14 @@ import com.react.test.dto.StatementResponseDto;
 import com.react.test.dto.UserDto;
 import com.react.test.repository.StatementRepository;
 import com.react.test.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +27,9 @@ public class UserService {
     private RemoteService remoteService;
     @Autowired
     private StatementRepository statementRepository;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
+    private static final String LOCAL_TIME_FORMAT = "dd-MM-yyyy HH:mm:ss";
 
     public List<UserDto> getAllUsers() {
         return userRepository.getAllUsers();
@@ -70,25 +77,40 @@ public class UserService {
 
         List<StatementResponseDto> remoteResponse = remoteService.getRemoteUserStatement("0",
                 lastTime, currentTime, "uOwuzdeE-0NZ6sZsrC59qyWq3IkWPCb-AF6dIANhPioE");
+        LOGGER.info("From remote service has been retrieved new updated statement with size: " + remoteResponse.size());
+
 
         //insert remote response to db
         if (remoteResponse != null && !remoteResponse.isEmpty()) {
+            mapLocalTime(remoteResponse);
             statementRepository.saveStatements(userFromDb, remoteResponse);
         }
 
-        //get from beginDate to endDate
+        //transactions selection by specified time range (e.g. statistic for specified month)
         List<StatementResponseDto> localResponse = statementRepository.getStatementInRange(userFromDb.getUsername(), 1564617600L, 1565012959L);
+        LOGGER.info("From db has been selected statement with size: " + localResponse.size());
 
         return fillResult(localResponse);
+    }
+
+    private void mapLocalTime(List<StatementResponseDto> remoteResponse) {
+        remoteResponse.forEach(elem -> elem.setLocalTime(timestampToLocalTime(elem.getTime(), LOCAL_TIME_FORMAT)));
+    }
+
+    private String timestampToLocalTime(Long time, String localTimeFormat) {
+        Date date = new Date(time*1000);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(localTimeFormat);
+        return dateFormat.format(date);
     }
 
     private Map<CategoryType, BigDecimal> fillResult(List<StatementResponseDto> localResponse) {
         Map<CategoryType, BigDecimal> result = new LinkedHashMap<>();
         List<StatementResponseDto> resultList = localResponse.stream()
+                //filter positive transactions. should be counted spending(negative) transactions only
                 .filter(elem -> elem.getAmount()<0)
                 .collect(Collectors.toList());
         for (StatementResponseDto element : resultList) {
-            BigDecimal amount = BigDecimal.valueOf(Math.abs(element.getAmount())/100);
+            BigDecimal amount = BigDecimal.valueOf(Math.abs(element.getAmount())).divide(new BigDecimal(100));
             if (result.get(element.getCategoryType()) == null) {
                 result.put(element.getCategoryType(), amount);
             } else {

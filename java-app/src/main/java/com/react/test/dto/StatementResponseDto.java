@@ -3,15 +3,16 @@ package com.react.test.dto;
 public class StatementResponseDto {
     private String id;
     private Long time;
+    private String localTime;
     private String description;
     private int mcc;
     private boolean hold;
-    private Double amount;
-    private Double operationAmount;
+    private int amount;
+    private int operationAmount;
     private int currencyCode;
-    private Double commissionRate;
-    private Double cashbackAmount;
-    private Double balance;
+    private int commissionRate;
+    private int cashbackAmount;
+    private int balance;
     private CategoryType categoryType;
 
     public String getId() {
@@ -54,19 +55,19 @@ public class StatementResponseDto {
         this.hold = hold;
     }
 
-    public Double getAmount() {
+    public int getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(int amount) {
         this.amount = amount;
     }
 
-    public Double getOperationAmount() {
+    public int getOperationAmount() {
         return operationAmount;
     }
 
-    public void setOperationAmount(Double operationAmount) {
+    public void setOperationAmount(int operationAmount) {
         this.operationAmount = operationAmount;
     }
 
@@ -78,27 +79,27 @@ public class StatementResponseDto {
         this.currencyCode = currencyCode;
     }
 
-    public Double getCommissionRate() {
+    public int getCommissionRate() {
         return commissionRate;
     }
 
-    public void setCommissionRate(Double commissionRate) {
+    public void setCommissionRate(int commissionRate) {
         this.commissionRate = commissionRate;
     }
 
-    public Double getCashbackAmount() {
+    public int getCashbackAmount() {
         return cashbackAmount;
     }
 
-    public void setCashbackAmount(Double cashbackAmount) {
+    public void setCashbackAmount(int cashbackAmount) {
         this.cashbackAmount = cashbackAmount;
     }
 
-    public Double getBalance() {
+    public int getBalance() {
         return balance;
     }
 
-    public void setBalance(Double balance) {
+    public void setBalance(int balance) {
         this.balance = balance;
     }
 
@@ -108,5 +109,13 @@ public class StatementResponseDto {
 
     public void setCategoryType(CategoryType categoryType) {
         this.categoryType = categoryType;
+    }
+
+    public String getLocalTime() {
+        return localTime;
+    }
+
+    public void setLocalTime(String localTime) {
+        this.localTime = localTime;
     }
 }
