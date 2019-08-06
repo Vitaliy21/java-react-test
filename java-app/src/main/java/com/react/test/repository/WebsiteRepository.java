@@ -1,15 +1,14 @@
 package com.react.test.repository;
 
 import com.react.test.dto.Website;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//TODO: try with @repository instead of @component
-@Component
+@Repository
 public class WebsiteRepository {
     private static final Map<Integer, Website> WEBSITES = new HashMap<>();
     private static Integer counter = 1;

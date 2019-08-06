@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +54,7 @@ public class UserReactController {
 
     @GetMapping(value = "/user/details/{username}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<?> details(@PathVariable String username) {
-        Map<CategoryType, Double> result;
+        Map<CategoryType, BigDecimal> result;
         String beginDate = "1-08-2019";
         String endDate = "5-08-2019";
         try {
@@ -64,10 +65,5 @@ public class UserReactController {
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
-//    @GetMapping("/user/search/{username}")
-//    public ResponseEntity<UserDto> getUser(@PathVariable String username) throws Exception {
-//        return new ResponseEntity<>(userService.getUser(username), HttpStatus.OK);
-//    }
 
 }

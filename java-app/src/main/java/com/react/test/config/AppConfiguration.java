@@ -1,5 +1,7 @@
 package com.react.test.config;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -13,7 +15,6 @@ import org.springframework.web.client.RestTemplate;
 public class AppConfiguration {
 
     private RestTemplate restTemplate;
-//    ObjectMapper objectMapper;
 
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
@@ -21,14 +22,15 @@ public class AppConfiguration {
                 .messageConverters(new MappingJackson2HttpMessageConverter())
                 .interceptors(new CustomClientHttpRequestInterceptor())
                 .build();
-        return restTemplate;
+        return this.restTemplate;
     }
 
-//    @Bean
-//    public ObjectMapper objectMapper() {
-//        this.objectMapper = new ObjectMapper();
-//        return objectMapper;
-//    }
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+        return objectMapper;
+    }
 
 
     @Value("${mongoDb.uri:#{null}}")

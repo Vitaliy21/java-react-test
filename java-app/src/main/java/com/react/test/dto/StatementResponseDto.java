@@ -1,10 +1,8 @@
 package com.react.test.dto;
 
-import java.sql.Timestamp;
-
 public class StatementResponseDto {
     private String id;
-    private Timestamp time;
+    private Long time;
     private String description;
     private int mcc;
     private boolean hold;
@@ -24,11 +22,11 @@ public class StatementResponseDto {
         this.id = id;
     }
 
-    public Timestamp getTime() {
+    public Long getTime() {
         return time;
     }
 
-    public void setTime(Timestamp time) {
+    public void setTime(Long time) {
         this.time = time;
     }
 

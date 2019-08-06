@@ -8,7 +8,10 @@ import com.react.test.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.math.BigDecimal;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,28 +56,45 @@ public class UserService {
         }
     }
 
-    public Map<CategoryType, Double> getUserData(String username, String beginDate, String endDate) throws Exception {
+    public Map<CategoryType, BigDecimal> getUserData(String username, String beginDate, String endDate) {
         UserDto userFromDb = userRepository.findByUsername(username);
+        long lastLongTime = statementRepository.getLastTimeOfStatement(username);
+        long currentLongTime = System.currentTimeMillis() / 1000L;
+        String currentTime = String.valueOf(currentLongTime);
+        String lastTime;
+        if (lastLongTime != 0L) {
+            lastTime = String.valueOf(lastLongTime);
+        } else {
+            lastTime = String.valueOf(currentLongTime - 2682000);
+        }
 
         List<StatementResponseDto> remoteResponse = remoteService.getRemoteUserStatement("0",
-                "1562420985", "1565012959", "uOwuzdeE-0NZ6sZsrC59qyWq3IkWPCb-AF6dIANhPioE");
+                lastTime, currentTime, "uOwuzdeE-0NZ6sZsrC59qyWq3IkWPCb-AF6dIANhPioE");
 
         //insert remote response to db
-        statementRepository.saveStatements(userFromDb, remoteResponse);
+        if (remoteResponse != null && !remoteResponse.isEmpty()) {
+            statementRepository.saveStatements(userFromDb, remoteResponse);
+        }
 
         //get from beginDate to endDate
-        List<StatementResponseDto> localResponse = statementRepository.getStatementInRange(userFromDb.getUsername(), "1564617600", "1565012959");
+        List<StatementResponseDto> localResponse = statementRepository.getStatementInRange(userFromDb.getUsername(), 1564617600L, 1565012959L);
 
         return fillResult(localResponse);
     }
 
-    private Map<CategoryType, Double> fillResult(List<StatementResponseDto> localResponse) {
-        Map<CategoryType, Double> result = new LinkedHashMap<>();
+    private Map<CategoryType, BigDecimal> fillResult(List<StatementResponseDto> localResponse) {
+        Map<CategoryType, BigDecimal> result = new LinkedHashMap<>();
         List<StatementResponseDto> resultList = localResponse.stream()
                 .filter(elem -> elem.getAmount()<0)
                 .collect(Collectors.toList());
-        resultList.stream().forEach(elem -> result.put(elem.getCategoryType(), result.get(elem.getCategoryType()) + elem.getAmount()));
-
+        for (StatementResponseDto element : resultList) {
+            BigDecimal amount = BigDecimal.valueOf(Math.abs(element.getAmount())/100);
+            if (result.get(element.getCategoryType()) == null) {
+                result.put(element.getCategoryType(), amount);
+            } else {
+                result.put(element.getCategoryType(), result.get(element.getCategoryType()).add(amount));
+            }
+        }
         return result;
     }
 

@@ -9,6 +9,7 @@ import com.react.test.dto.UserDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -34,29 +35,30 @@ public class StatementRepository {
 
     public void saveStatements(UserDto user, List<StatementResponseDto> newStatements) {
         Map<String, CategoryType> categories = user.getCategories();
-//        newStatements.stream().forEach(transaction -> {
-//            if(categories.get(transaction.getDescription()) == null) {
-//                transaction.setCategoryType(CategoryType.UNDEFINED);
-//            } else {
-//                transaction.setCategoryType(categories.get(transaction.getDescription()));
-//            }
-//        });
-        for (StatementResponseDto transaction : newStatements) {
+        newStatements.forEach(transaction -> {
             if(categories.get(transaction.getDescription()) == null) {
                 transaction.setCategoryType(CategoryType.UNDEFINED);
             } else {
                 transaction.setCategoryType(categories.get(transaction.getDescription()));
             }
-        }
+        });
         mongoTemplate.insert(newStatements, user.getUsername() + "_statements");
         LOGGER.info("statements has been successfully added");
     }
 
-    public List<StatementResponseDto> getStatementInRange(String username, String beginDate, String endDate) {
-        Query query = Query.query(Criteria.where("username").is(username))
-                .addCriteria(Criteria.where("time").gte(beginDate))
-                .addCriteria(Criteria.where("time").lte(endDate));
-        List<StatementResponseDto> result = mongoTemplate.find(query, StatementResponseDto.class, username + "_statements");
-        return result;
+    public List<StatementResponseDto> getStatementInRange(String username, Long beginDate, Long endDate) {
+        Query query = Query.query(Criteria.where("time").gte(beginDate).lt(endDate));
+        return mongoTemplate.find(query, StatementResponseDto.class, username + "_statements");
+    }
+
+    public Long getLastTimeOfStatement(String username) {
+        Query query = new Query();
+        query.with(new Sort(Sort.Direction.DESC, "time"));
+        query.limit(1);
+        StatementResponseDto maxObject = mongoTemplate.findOne(query, StatementResponseDto.class, username + "_statements");
+        if (maxObject == null) {
+            return 0L;
+        }
+        return maxObject.getTime()+1;
     }
 }
