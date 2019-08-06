@@ -4,15 +4,28 @@ import { Link } from 'react-router-dom';
 class Welcome extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {date: new Date()}
+        this.state = {date: new Date(),
+                      user: {username: '', token: '', password: ''},
+                      details: {RESTAURANTS: 0, SUPERMARKETS: 0, TAXI: 0, FUN: 0, UNDEFINED: 0}
+                      }
       }
 
 
     componentDidMount() {
+        this.state.user = this.props.location.state.detail
         this.timerID = setInterval(
           () => this.tick(),
           1000
         );
+        fetch('http://localhost:9999/user/details/' + this.state.user.username)
+        	.then(response => {
+        		return response.json();
+        	}).then(result => {
+        		console.log(result);
+        		this.setState({
+        			details:result
+        		});
+        	});
       }
 
       componentWillUnmount() {
@@ -26,9 +39,14 @@ class Welcome extends React.Component {
       }
 
     render() {
-        return (<div>
-                    <h1>Привет, {this.props.location.state.detail}!</h1>
-                    <h2>Сейчас {this.state.date.toLocaleTimeString()}.</h2>
+        return (<div id='head'>
+                    <h1>Привет, {this.state.user.username}!</h1>
+                    <h1>Сейчас {this.state.date.toLocaleTimeString()}.</h1>
+                    <h2>RESTAURANTS -> {this.state.details.RESTAURANTS}</h2>
+                    <h2>SUPERMARKETS -> {this.state.details.SUPERMARKETS}</h2>
+                    <h2>TAXI -> {this.state.details.TAXI}</h2>
+                    <h2>FUN -> {this.state.details.FUN}</h2>
+                    <h2>UNDEFINED -> {this.state.details.UNDEFINED}</h2>
                 </div>
         );
     }
