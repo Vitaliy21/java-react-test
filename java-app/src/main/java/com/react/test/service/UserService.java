@@ -87,7 +87,7 @@ public class UserService {
         }
 
         //transactions selection by specified time range (e.g. statistic for specified month)
-        List<StatementResponseDto> localResponse = statementRepository.getStatementInRange(userFromDb.getUsername(), 1564617600L, 1565012959L);
+        List<StatementResponseDto> localResponse = statementRepository.getStatementInRange(userFromDb.getUsername(), 1564617600L, currentLongTime);
         LOGGER.info("From db has been selected statement with size: " + localResponse.size());
 
         return fillResult(localResponse);
@@ -102,6 +102,12 @@ public class UserService {
         SimpleDateFormat dateFormat = new SimpleDateFormat(localTimeFormat);
         return dateFormat.format(date);
     }
+
+    //TODO: upgrade date with localDateTime:
+//    LocalDateTime  localDate = LocalDateTime.now();//For reference
+//    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+//    String formattedString = localDate.format(formatter);
+//    localDate.withDayOfMonth(1);
 
     private Map<CategoryType, BigDecimal> fillResult(List<StatementResponseDto> localResponse) {
         Map<CategoryType, BigDecimal> result = new LinkedHashMap<>();
