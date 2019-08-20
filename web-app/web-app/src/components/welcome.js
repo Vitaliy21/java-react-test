@@ -1,10 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+
 class Welcome extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {date: new Date(),
+        this.state = {currentDate: new Date(),
+                      firstDay: new Date(),
+                      firstDayPrevMonth: new Date(),
+                      lastDayPrevMonth: new Date(),
                       user: {username: '', token: '', password: ''},
                       details: {RESTAURANTS: 0, SUPERMARKETS: 0, TAXI: 0, FUN: 0, OTHER: 0, UNDEFINED: 0}
                       }
@@ -12,7 +16,10 @@ class Welcome extends React.Component {
 
 
     componentDidMount() {
-        this.state.user = this.props.location.state.detail
+        this.state.user = this.props.location.state.detail;
+        this.state.firstDay = new Date(this.state.currentDate.getFullYear(), this.state.currentDate.getMonth(), 1);
+        this.state.firstDayPrevMonth = new Date(this.state.currentDate.getFullYear(), this.state.currentDate.getMonth() - 1, 1);
+        this.state.lastDayPrevMonth = new Date(this.state.currentDate.getFullYear(), this.state.currentDate.getMonth(), 0);
         this.timerID = setInterval(
           () => this.tick(),
           1000
@@ -34,25 +41,61 @@ class Welcome extends React.Component {
 
       tick() {
         this.setState({
-          date: new Date()
+          currentDate: new Date()
         });
       }
 
     render() {
         return (<div id='head' align='center'>
                     <h1>Привет, {this.state.user.username}!</h1>
-                    <h1>Сегодня {this.state.date.toLocaleDateString()}.   Сейчас {this.state.date.toLocaleTimeString()}.</h1>
+                    <h1>Сегодня {this.state.currentDate.toLocaleDateString()}.   Сейчас {this.state.currentDate.toLocaleTimeString()}.</h1>
+
+                    <h1>Сегодняшняя дата: {this.state.currentDate.toLocaleDateString()}.   Первая дата месяца: {this.state.firstDay.toLocaleDateString()}.</h1>
+                    <h1>Первая дата прошлого месяца: {this.state.firstDayPrevMonth.toLocaleDateString()}.
+                        Последняя дата прошлого месяца: {this.state.lastDayPrevMonth.toLocaleDateString()}.</h1>
                     <p>&nbsp;</p>
                     <p>&nbsp;</p>
                     <p>&nbsp;</p>
                     <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <h2>RESTAURANTS -> {this.state.details.RESTAURANTS}</h2>
-                    <h2>SUPERMARKETS -> {this.state.details.SUPERMARKETS}</h2>
-                    <h2>TAXI -> {this.state.details.TAXI}</h2>
-                    <h2>FUN -> {this.state.details.FUN}</h2>
-                    <h2>OTHER -> {this.state.details.OTHER}</h2>
-                    <h2>UNDEFINED -> {this.state.details.UNDEFINED}</h2>
+
+                    <table>
+                      <tr>
+                        <th>Category type</th>
+                        <th>Last month spent</th>
+                        <th>Current month spent</th>
+                      </tr>
+                      <tr>
+                        <td>RESTAURANTS -> </td>
+                        <td> ? </td>
+                        <td>{this.state.details.RESTAURANTS}</td>
+                      </tr>
+                      <tr>
+                        <td>SUPERMARKETS -> </td>
+                        <td> ? </td>
+                        <td>{this.state.details.SUPERMARKETS}</td>
+                      </tr>
+                      <tr>
+                        <td>TAXI -> </td>
+                        <td> ? </td>
+                        <td>{this.state.details.TAXI}</td>
+                      </tr>
+                      <tr>
+                        <td>FUN -> </td>
+                        <td> ? </td>
+                        <td>{this.state.details.FUN}</td>
+                      </tr>
+                      <tr>
+                        <td>OTHER -> </td>
+                        <td> ? </td>
+                        <td>{this.state.details.OTHER}</td>
+                      </tr>
+                      <tr>
+                        <td>UNDEFINED -> </td>
+                        <td> ? </td>
+                        <td>{this.state.details.UNDEFINED}</td>
+                      </tr>
+                    </table>
+
                 </div>
         );
     }
