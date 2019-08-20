@@ -38,7 +38,7 @@ class Login extends React.Component {
         			return response.text();
         		}
         }).then(result => {
-                if (redirect == false) {
+                if (redirect === false) {
                     console.log(result);
                     alert(result)
                 } else {

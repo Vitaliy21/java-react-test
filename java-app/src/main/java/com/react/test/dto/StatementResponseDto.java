@@ -14,6 +14,7 @@ public class StatementResponseDto {
     private int cashbackAmount;
     private int balance;
     private CategoryType categoryType;
+    private String comment;
 
     public String getId() {
         return id;
@@ -117,5 +118,13 @@ public class StatementResponseDto {
 
     public void setLocalTime(String localTime) {
         this.localTime = localTime;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }
