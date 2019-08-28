@@ -10,7 +10,8 @@ class Welcome extends React.Component {
                       firstDayPrevMonth: new Date(),
                       lastDayPrevMonth: new Date(),
                       user: {username: '', token: '', password: ''},
-                      details: {RESTAURANTS: 0, SUPERMARKETS: 0, TAXI: 0, FUN: 0, OTHER: 0, UNDEFINED: 0}
+                      details1: {RESTAURANTS: 0, SUPERMARKETS: 0, TAXI: 0, FUN: 0, OTHER: 0, UNDEFINED: 0},
+                      details2: {RESTAURANTS: 0, SUPERMARKETS: 0, TAXI: 0, FUN: 0, OTHER: 0, UNDEFINED: 0}
                       }
       }
 
@@ -24,15 +25,28 @@ class Welcome extends React.Component {
           () => this.tick(),
           1000
         );
-        fetch('http://localhost:9999/user/details/' + this.state.user.username)
+        fetch('http://localhost:9999/user/details/' + this.state.user.username +
+                        '/' + this.state.firstDay.toLocaleDateString("nl",{year:"2-digit",month:"2-digit", day:"2-digit"}) +
+                        '/' + this.state.currentDate.toLocaleDateString("nl",{year:"2-digit",month:"2-digit", day:"2-digit"}))
         	.then(response => {
         		return response.json();
         	}).then(result => {
         		console.log(result);
         		this.setState({
-        			details:result
+        			details1:result
         		});
         	});
+        fetch('http://localhost:9999/user/details/' + this.state.user.username +
+                        '/' + this.state.firstDayPrevMonth.toLocaleDateString("nl",{year:"2-digit",month:"2-digit", day:"2-digit"}) +
+                        '/' + this.state.lastDayPrevMonth.toLocaleDateString("nl",{year:"2-digit",month:"2-digit", day:"2-digit"}))
+            .then(response => {
+                return response.json();
+            }).then(result => {
+                console.log(result);
+                this.setState({
+                	details2:result
+                });
+            });
       }
 
       componentWillUnmount() {
@@ -50,7 +64,8 @@ class Welcome extends React.Component {
                     <h1>Привет, {this.state.user.username}!</h1>
                     <h1>Сегодня {this.state.currentDate.toLocaleDateString()}.   Сейчас {this.state.currentDate.toLocaleTimeString()}.</h1>
 
-                    <h1>Сегодняшняя дата: {this.state.currentDate.toLocaleDateString()}.   Первая дата месяца: {this.state.firstDay.toLocaleDateString()}.</h1>
+                    <h1>Сегодняшняя дата: {this.state.currentDate.toLocaleDateString("nl",{year:"2-digit",month:"2-digit", day:"2-digit"})}.
+                        Первая дата месяца: {this.state.firstDay.toLocaleDateString("nl",{year:"2-digit",month:"2-digit", day:"2-digit"})}.</h1>
                     <h1>Первая дата прошлого месяца: {this.state.firstDayPrevMonth.toLocaleDateString()}.
                         Последняя дата прошлого месяца: {this.state.lastDayPrevMonth.toLocaleDateString()}.</h1>
                     <p>&nbsp;</p>
@@ -66,33 +81,33 @@ class Welcome extends React.Component {
                       </tr>
                       <tr>
                         <td>RESTAURANTS -> </td>
-                        <td> ? </td>
-                        <td>{this.state.details.RESTAURANTS}</td>
+                        <td>{this.state.details2.RESTAURANTS}</td>
+                        <td>{this.state.details1.RESTAURANTS}</td>
                       </tr>
                       <tr>
                         <td>SUPERMARKETS -> </td>
-                        <td> ? </td>
-                        <td>{this.state.details.SUPERMARKETS}</td>
+                        <td>{this.state.details2.SUPERMARKETS}</td>
+                        <td>{this.state.details1.SUPERMARKETS}</td>
                       </tr>
                       <tr>
                         <td>TAXI -> </td>
-                        <td> ? </td>
-                        <td>{this.state.details.TAXI}</td>
+                        <td>{this.state.details2.TAXI}</td>
+                        <td>{this.state.details1.TAXI}</td>
                       </tr>
                       <tr>
                         <td>FUN -> </td>
-                        <td> ? </td>
-                        <td>{this.state.details.FUN}</td>
+                        <td>{this.state.details2.FUN}</td>
+                        <td>{this.state.details1.FUN}</td>
                       </tr>
                       <tr>
                         <td>OTHER -> </td>
-                        <td> ? </td>
-                        <td>{this.state.details.OTHER}</td>
+                        <td>{this.state.details2.OTHER}</td>
+                        <td>{this.state.details1.OTHER}</td>
                       </tr>
                       <tr>
                         <td>UNDEFINED -> </td>
-                        <td> ? </td>
-                        <td>{this.state.details.UNDEFINED}</td>
+                        <td>{this.state.details2.UNDEFINED}</td>
+                        <td>{this.state.details1.UNDEFINED}</td>
                       </tr>
                     </table>
 

@@ -52,11 +52,9 @@ public class UserReactController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/user/details/{username}", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> details(@PathVariable String username) {
+    @GetMapping(value = "/user/details/{username}/{beginDate}/{endDate}", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> details(@PathVariable String username, @PathVariable String beginDate, @PathVariable String endDate) {
         Map<CategoryType, BigDecimal> result;
-        String beginDate = "1-08-2019";
-        String endDate = "5-08-2019";
         try {
             result = userService.getUserData(username, beginDate, endDate);
         } catch (Exception e) {

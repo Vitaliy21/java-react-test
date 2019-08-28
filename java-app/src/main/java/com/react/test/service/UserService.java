@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -59,35 +61,36 @@ public class UserService {
         } else if (!userDto.getPassword().equals(userFromDb.getPassword())) {
             throw new Exception("Wrong password");
         } else {
+            long lastLongTime = statementRepository.getLastTimeOfStatement(userFromDb.getUsername());
+            long currentLongTime = System.currentTimeMillis() / 1000L;
+            String currentTime = String.valueOf(currentLongTime);
+            String lastTime;
+            if (lastLongTime != 0L) {
+                lastTime = String.valueOf(lastLongTime);
+            } else {
+                lastTime = String.valueOf(currentLongTime - 2682000);
+            }
+
+            //get updated data from remote
+            List<StatementResponseDto> remoteResponse = remoteService.getRemoteUserStatement("0",
+                    lastTime, currentTime, "uOwuzdeE-0NZ6sZsrC59qyWq3IkWPCb-AF6dIANhPioE");
+            LOGGER.info("From remote service has been retrieved new updated statement with size: " + remoteResponse.size());
+
+            //insert remote response to db
+            if (!remoteResponse.isEmpty()) {
+                mapLocalTime(remoteResponse);
+                statementRepository.saveStatements(userFromDb, remoteResponse);
+            }
             return userFromDb;
         }
     }
 
     public Map<CategoryType, BigDecimal> getUserData(String username, String beginDate, String endDate) {
         UserDto userFromDb = userRepository.findByUsername(username);
-        long lastLongTime = statementRepository.getLastTimeOfStatement(username);
-        long currentLongTime = System.currentTimeMillis() / 1000L;
-        String currentTime = String.valueOf(currentLongTime);
-        String lastTime;
-        if (lastLongTime != 0L) {
-            lastTime = String.valueOf(lastLongTime);
-        } else {
-            lastTime = String.valueOf(currentLongTime - 2682000);
-        }
-
-        List<StatementResponseDto> remoteResponse = remoteService.getRemoteUserStatement("0",
-                lastTime, currentTime, "uOwuzdeE-0NZ6sZsrC59qyWq3IkWPCb-AF6dIANhPioE");
-        LOGGER.info("From remote service has been retrieved new updated statement with size: " + remoteResponse.size());
-
-
-        //insert remote response to db
-        if (remoteResponse != null && !remoteResponse.isEmpty()) {
-            mapLocalTime(remoteResponse);
-            statementRepository.saveStatements(userFromDb, remoteResponse);
-        }
 
         //transactions selection by specified time range (e.g. statistic for specified month)
-        List<StatementResponseDto> localResponse = statementRepository.getStatementInRange(userFromDb.getUsername(), 1564617600L, currentLongTime);
+        List<StatementResponseDto> localResponse = statementRepository.getStatementInRange(userFromDb.getUsername(),
+                localTimeToTimesamp(beginDate).getTime()/1000, localTimeToTimesamp(endDate).getTime()/1000);
         LOGGER.info("From db has been selected statement with size: " + localResponse.size());
 
         return fillResult(localResponse);
@@ -101,6 +104,18 @@ public class UserService {
         Date date = new Date(time*1000);
         SimpleDateFormat dateFormat = new SimpleDateFormat(localTimeFormat);
         return dateFormat.format(date);
+    }
+
+    private Timestamp localTimeToTimesamp(String time) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yy");
+        Timestamp timestamp = null;
+        try {
+            Date parsedDate = dateFormat.parse(time);
+            timestamp = new java.sql.Timestamp(parsedDate.getTime());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return timestamp;
     }
 
     //TODO: upgrade date with localDateTime:
