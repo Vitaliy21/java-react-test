@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -62,6 +63,13 @@ public class UserReactController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/user/search/{username}/{category}", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getWebsite(@PathVariable String username, @PathVariable String category) {
+//        List<String> merchants = userService.getMerchantsByUsernameAndCategory(usernameAndCategory);
+        List<String> merchants = Arrays.asList("merchant 1", "merchant 2");
+        return new ResponseEntity<>(merchants, HttpStatus.OK);
     }
 
 }

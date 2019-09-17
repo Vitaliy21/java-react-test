@@ -10,6 +10,7 @@ class Welcome extends React.Component {
                       firstDayPrevMonth: new Date(),
                       lastDayPrevMonth: new Date(),
                       user: {username: '', token: '', password: ''},
+                      category: {undefined: 'UNDEFINED'},
                       details1: {RESTAURANTS: 0, SUPERMARKETS: 0, TAXI: 0, FUN: 0, OTHER: 0, UNDEFINED: 0},
                       details2: {RESTAURANTS: 0, SUPERMARKETS: 0, TAXI: 0, FUN: 0, OTHER: 0, UNDEFINED: 0}
                       }
@@ -108,6 +109,7 @@ class Welcome extends React.Component {
                         <td>UNDEFINED -> </td>
                         <td>{this.state.details2.UNDEFINED}</td>
                         <td>{this.state.details1.UNDEFINED}</td>
+                        <td><Link to={`/update2/${this.state.user.username}/${this.state.category.undefined}`}>Edit</Link></td>
                       </tr>
                     </table>
 
