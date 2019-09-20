@@ -66,9 +66,8 @@ public class UserReactController {
     }
 
     @GetMapping(value = "/user/search/{username}/{category}", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getWebsite(@PathVariable String username, @PathVariable String category) {
-//        List<String> merchants = userService.getMerchantsByUsernameAndCategory(usernameAndCategory);
-        List<String> merchants = Arrays.asList("merchant 1", "merchant 2");
+    public ResponseEntity<?> merchants(@PathVariable String username, @PathVariable String category) {
+        List<String> merchants = userService.getMerchantsByCategory(username, category);
         return new ResponseEntity<>(merchants, HttpStatus.OK);
     }
 

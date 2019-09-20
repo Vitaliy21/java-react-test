@@ -25,7 +25,7 @@ public class UserRepository {
     private AppConfiguration configuration;
 
     @Autowired
-    public void setMongoTemplate() {
+    private void setMongoTemplate() {
         mongoTemplate = new MongoTemplate(new MongoClient(
                 new MongoClientURI(configuration.getMongoUri())), configuration.getMongoUsersDbName());
     }

@@ -15,8 +15,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 public class StatementRepository {
@@ -28,7 +27,7 @@ public class StatementRepository {
     private static final Logger LOGGER = LoggerFactory.getLogger(StatementRepository.class);
 
     @Autowired
-    public void setMongoTemplate() {
+    private void setMongoTemplate() {
         mongoTemplate = new MongoTemplate(new MongoClient(
                 new MongoClientURI(configuration.getMongoUri())), configuration.getMongoStatementsDbName());
     }
@@ -60,5 +59,11 @@ public class StatementRepository {
             return 0L;
         }
         return maxObject.getTime()+1;
+    }
+
+    public List<StatementResponseDto> getMerchantsByCategory(String username, CategoryType categoryType) {
+        Query query = Query.query(Criteria.where("categoryType").is(categoryType));
+        List<StatementResponseDto> statements = mongoTemplate.find(query, StatementResponseDto.class, username + "_statements");
+        return statements;
     }
 }

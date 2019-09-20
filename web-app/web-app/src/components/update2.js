@@ -7,8 +7,8 @@ class Update2 extends React.Component {
           this.state = {merchants: []}
           this.headers = [
           	{ key: 'merchantName', label: 'Merchant name' },
-          	{ key: 'username', label: 'Username' },
-          	{ key: 'category', label: 'Category' },
+//          	{ key: 'username', label: 'Username' },
+//          	{ key: 'category', label: 'Category' },
           ];
       }
 
@@ -47,8 +47,6 @@ class Update2 extends React.Component {
       							return (
       								<tr key = {key}>
       								  <td>{item}</td>
-      								  <td>{this.props.match.params.username}</td>
-      								  <td>{this.props.match.params.category}</td>
       								</tr>
       											)
       							}.bind(this))

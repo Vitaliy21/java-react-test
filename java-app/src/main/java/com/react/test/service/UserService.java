@@ -14,10 +14,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -141,4 +138,37 @@ public class UserService {
         return result;
     }
 
+    public List<String> getMerchantsByCategory(String username, String category) {
+        List<String> result = new ArrayList<>();
+        CategoryType categoryType = getCategory(category);
+        List<StatementResponseDto> merchantsByCategory = statementRepository.getMerchantsByCategory(username, categoryType);
+        Map<String, BigDecimal> calculatedMerchants = calculateByMerchantName(merchantsByCategory);
+        calculatedMerchants.forEach((key, value) -> {
+            result.add(key + "    :    " + value + "  UAH");
+        });
+        return result;
+    }
+
+    private Map<String, BigDecimal> calculateByMerchantName(List<StatementResponseDto> merchantsByCategory) {
+        Map<String, BigDecimal> result = new LinkedHashMap<>();
+        List<StatementResponseDto> filteredMerchants = merchantsByCategory.stream()
+                .filter(elem -> elem.getAmount() < 0)
+                .collect(Collectors.toList());
+        for (StatementResponseDto element : filteredMerchants) {
+            BigDecimal amount = BigDecimal.valueOf(Math.abs(element.getAmount())).divide(new BigDecimal(100));
+            if (result.get(element.getDescription()) == null) {
+                result.put(element.getDescription(), amount);
+            } else {
+                result.put(element.getDescription(), result.get(element.getDescription()).add(amount));
+            }
+        }
+        return result;
+    }
+
+    private CategoryType getCategory(String category) {
+        switch (category) {
+            case "UNDEFINED": return CategoryType.UNDEFINED;
+            default: return CategoryType.UNDEFINED;
+        }
+    }
 }
