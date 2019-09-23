@@ -10,6 +10,7 @@ import Update from './components/update';
 import Welcome from './components/welcome';
 import Users from './components/users';
 import Update2 from './components/update2';
+import Update3 from './components/update3';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
@@ -23,6 +24,7 @@ ReactDOM.render(
 			<Route path='/welcome' component={Welcome} />
 			<Route path='/users' component={Users} />
 			<Route path='/update2/:username/:category' component={Update2} />
+			<Route path='/update3/:username/:category/:merchant' component={Update3} />
 		</div>
 	</Router>,
 document.getElementById('root'));

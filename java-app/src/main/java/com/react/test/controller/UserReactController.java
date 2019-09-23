@@ -1,6 +1,7 @@
 package com.react.test.controller;
 
 import com.react.test.dto.CategoryType;
+import com.react.test.dto.UserCategoryDto;
 import com.react.test.dto.UserDto;
 import com.react.test.service.UserService;
 import org.slf4j.Logger;
@@ -11,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -69,6 +69,12 @@ public class UserReactController {
     public ResponseEntity<?> merchants(@PathVariable String username, @PathVariable String category) {
         List<String> merchants = userService.getMerchantsByCategory(username, category);
         return new ResponseEntity<>(merchants, HttpStatus.OK);
+    }
+
+    @PostMapping("/user/updateCategory")
+    public ResponseEntity<?> updateWebsite(@RequestBody UserCategoryDto userCategoryDto) throws Exception {
+        userService.updateCategory(userCategoryDto);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

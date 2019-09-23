@@ -2,6 +2,7 @@ package com.react.test.service;
 
 import com.react.test.dto.CategoryType;
 import com.react.test.dto.StatementResponseDto;
+import com.react.test.dto.UserCategoryDto;
 import com.react.test.dto.UserDto;
 import com.react.test.repository.StatementRepository;
 import com.react.test.repository.UserRepository;
@@ -144,7 +145,9 @@ public class UserService {
         List<StatementResponseDto> merchantsByCategory = statementRepository.getMerchantsByCategory(username, categoryType);
         Map<String, BigDecimal> calculatedMerchants = calculateByMerchantName(merchantsByCategory);
         calculatedMerchants.forEach((key, value) -> {
-            result.add(key + "    :    " + value + "  UAH");
+            //TODO: for now no need calculate prices
+//            result.add(key + "    :    " + value + "  UAH");
+            result.add(key);
         });
         return result;
     }
@@ -167,8 +170,20 @@ public class UserService {
 
     private CategoryType getCategory(String category) {
         switch (category) {
-            case "UNDEFINED": return CategoryType.UNDEFINED;
+            case "OTHER": return CategoryType.OTHER;
+            case "FUN": return CategoryType.FUN;
+            case "TAXI": return CategoryType.TAXI;
+            case "SUPERMARKETS": return CategoryType.SUPERMARKETS;
+            case "RESTAURANTS": return CategoryType.RESTAURANTS;
             default: return CategoryType.UNDEFINED;
         }
+    }
+
+    public void updateCategory(UserCategoryDto userCategoryDto) {
+        UserDto userDto = userRepository.findByUsername(userCategoryDto.getUsername());
+        userDto.getCategories().put(userCategoryDto.getMerchant(), userCategoryDto.getCategory());
+        userRepository.updateUser(userDto);
+
+        statementRepository.updateCategoryForMerchant(userCategoryDto.getUsername(), userCategoryDto.getMerchant(), userCategoryDto.getCategory());
     }
 }
