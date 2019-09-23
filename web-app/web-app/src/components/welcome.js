@@ -10,7 +10,14 @@ class Welcome extends React.Component {
                       firstDayPrevMonth: new Date(),
                       lastDayPrevMonth: new Date(),
                       user: {username: '', token: '', password: ''},
-                      category: {undefined: 'UNDEFINED'},
+                      category: {
+                        undefined: 'UNDEFINED',
+                        other: 'OTHER',
+                        fun: 'FUN',
+                        taxi: 'TAXI',
+                        supermarkets: 'SUPERMARKETS',
+                        restaurants: 'RESTAURANTS'
+                        },
                       details1: {RESTAURANTS: 0, SUPERMARKETS: 0, TAXI: 0, FUN: 0, OTHER: 0, UNDEFINED: 0},
                       details2: {RESTAURANTS: 0, SUPERMARKETS: 0, TAXI: 0, FUN: 0, OTHER: 0, UNDEFINED: 0}
                       }
@@ -84,26 +91,31 @@ class Welcome extends React.Component {
                         <td>RESTAURANTS -> </td>
                         <td>{this.state.details2.RESTAURANTS}</td>
                         <td>{this.state.details1.RESTAURANTS}</td>
+                        <td><Link to={`/update2/${this.state.user.username}/${this.state.category.restaurants}`}>Edit</Link></td>
                       </tr>
                       <tr>
                         <td>SUPERMARKETS -> </td>
                         <td>{this.state.details2.SUPERMARKETS}</td>
                         <td>{this.state.details1.SUPERMARKETS}</td>
+                        <td><Link to={`/update2/${this.state.user.username}/${this.state.category.supermarkets}`}>Edit</Link></td>
                       </tr>
                       <tr>
                         <td>TAXI -> </td>
                         <td>{this.state.details2.TAXI}</td>
                         <td>{this.state.details1.TAXI}</td>
+                        <td><Link to={`/update2/${this.state.user.username}/${this.state.category.taxi}`}>Edit</Link></td>
                       </tr>
                       <tr>
                         <td>FUN -> </td>
                         <td>{this.state.details2.FUN}</td>
                         <td>{this.state.details1.FUN}</td>
+                        <td><Link to={`/update2/${this.state.user.username}/${this.state.category.fun}`}>Edit</Link></td>
                       </tr>
                       <tr>
                         <td>OTHER -> </td>
                         <td>{this.state.details2.OTHER}</td>
                         <td>{this.state.details1.OTHER}</td>
+                        <td><Link to={`/update2/${this.state.user.username}/${this.state.category.other}`}>Edit</Link></td>
                       </tr>
                       <tr>
                         <td>UNDEFINED -> </td>

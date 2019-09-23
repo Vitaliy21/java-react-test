@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -65,5 +66,13 @@ public class StatementRepository {
         Query query = Query.query(Criteria.where("categoryType").is(categoryType));
         List<StatementResponseDto> statements = mongoTemplate.find(query, StatementResponseDto.class, username + "_statements");
         return statements;
+    }
+
+    public void updateCategoryForMerchant(String username, String merchant, CategoryType category) {
+        Query query = Query.query(Criteria.where("description").is(merchant));
+        Update update = new Update();
+        update.set("categoryType", category);
+
+        mongoTemplate.updateMulti(query, update, StatementResponseDto.class, username + "_statements");
     }
 }

@@ -47,6 +47,7 @@ class Update2 extends React.Component {
       							return (
       								<tr key = {key}>
       								  <td>{item}</td>
+      								  <td><Link to={`/update3/${this.props.match.params.username}/${this.props.match.params.category}/${item}`}>Edit</Link></td>
       								</tr>
       											)
       							}.bind(this))

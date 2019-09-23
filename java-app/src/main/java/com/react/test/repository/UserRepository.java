@@ -45,4 +45,8 @@ public class UserRepository {
     public List<UserDto> getAllUsers() {
         return mongoTemplate.findAll(UserDto.class, configuration.getMongoUsersCollectionName());
     }
+
+    public void updateUser(UserDto userDto) {
+        mongoTemplate.save(userDto, configuration.getMongoUsersCollectionName());
+    }
 }
