@@ -47,7 +47,7 @@ public class StatementRepository {
     }
 
     public List<StatementResponseDto> getStatementInRange(String username, Long beginDate, Long endDate) {
-        Query query = Query.query(Criteria.where("time").gte(beginDate).lt(endDate));
+        Query query = Query.query(Criteria.where("time").gte(beginDate).lte(endDate));
         return mongoTemplate.find(query, StatementResponseDto.class, username + "_statements");
     }
 

@@ -6,6 +6,7 @@ import java.util.Map;
 public class UserDto {
     private String id;
     private String username;
+    private String email;
     private String token;
     private String password;
     private Map<String, CategoryType> categories = new LinkedHashMap<>();
@@ -48,5 +49,13 @@ public class UserDto {
 
     public void setCategories(Map<String, CategoryType> categories) {
         this.categories = categories;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

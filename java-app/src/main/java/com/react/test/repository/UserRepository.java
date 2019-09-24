@@ -49,4 +49,16 @@ public class UserRepository {
     public void updateUser(UserDto userDto) {
         mongoTemplate.save(userDto, configuration.getMongoUsersCollectionName());
     }
+
+    public UserDto findByToken(String token) {
+        Query query = Query.query(Criteria.where("token").is(token));
+        List<UserDto> result = mongoTemplate.find(query, UserDto.class, configuration.getMongoUsersCollectionName());
+        return result.isEmpty() ? null : result.get(0);
+    }
+
+    public UserDto findByEmail(String email) {
+        Query query = Query.query(Criteria.where("email").is(email));
+        List<UserDto> result = mongoTemplate.find(query, UserDto.class, configuration.getMongoUsersCollectionName());
+        return result.isEmpty() ? null : result.get(0);
+    }
 }

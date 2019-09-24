@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 class Register extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {username: '', token:'', password:''};
+    this.state = {username: '', email: '', token:'', password:''};
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -20,6 +20,7 @@ class Register extends React.Component {
 			method: 'POST',
 			body: JSON.stringify({
 							username: this.state.username,
+							email: this.state.email,
 							token: this.state.token,
 							password: this.state.password,
 			}),
@@ -47,8 +48,13 @@ class Register extends React.Component {
 					<input type="text" name="username" value={this.state.username} onChange={this.handleChange} placeholder="Username" />
 				</p>
 				<p>
+					<label>Email:</label>
+					<input type="text" name="email" value={this.state.email} onChange={this.handleChange} placeholder="email" />
+				</p>
+				<p>
                     <label>Token:</label>
                     <input type="text" name="token" value={this.state.token} onChange={this.handleChange} placeholder="Token" />
+                    <a href="http://api.monobank.ua" target="_blank">find it there</a>
                 </p>
 				<p>
 					<label>Password:</label>

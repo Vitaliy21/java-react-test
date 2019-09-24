@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,6 +32,7 @@ public class UserService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
     private static final String LOCAL_TIME_FORMAT = "dd-MM-yyyy HH:mm:ss";
+    private static final Map<String, Long> LAST_USERS_CALLS = new HashMap<>();
 
     public List<UserDto> getAllUsers() {
         return userRepository.getAllUsers();
@@ -42,6 +45,13 @@ public class UserService {
         if (userRepository.findByUsername(userDto.getUsername()) != null) {
             throw new Exception("User with that username already exists");
         }
+        if (userRepository.findByToken(userDto.getToken()) != null) {
+            throw new Exception("User with that token already exists");
+        }
+        if (userRepository.findByEmail(userDto.getEmail()) != null) {
+            throw new Exception("User with that email already exists");
+        }
+
         try {
             userRepository.addUser(userDto);
         } catch (Exception e) {
@@ -69,10 +79,22 @@ public class UserService {
                 lastTime = String.valueOf(currentLongTime - 2682000);
             }
 
-            //get updated data from remote
-            List<StatementResponseDto> remoteResponse = remoteService.getRemoteUserStatement("0",
-                    lastTime, currentTime, "uOwuzdeE-0NZ6sZsrC59qyWq3IkWPCb-AF6dIANhPioE");
-            LOGGER.info("From remote service has been retrieved new updated statement with size: " + remoteResponse.size());
+            //get updated data from remote if last calling was later then 1 min
+            List<StatementResponseDto> remoteResponse = new ArrayList<>();
+            if (LAST_USERS_CALLS.get(userDto.getUsername()) != null && System.currentTimeMillis() - LAST_USERS_CALLS.get(userDto.getUsername()) < 1000 * 60) {
+                LOGGER.info("skipped remote call as less then 1 min after last calling");
+            } else {
+                List<StatementResponseDto> remoteUserStatements;
+                try {
+                    remoteUserStatements = remoteService.getRemoteUserStatement("0", lastTime, currentTime, userFromDb.getToken());
+                    LAST_USERS_CALLS.put(userDto.getUsername(), System.currentTimeMillis());
+                } catch (Exception e) {
+                    LOGGER.error("Remote calling failed. Cause: " + e);
+                    throw new Exception("Wrong Token");
+                }
+                remoteResponse.addAll(remoteUserStatements);
+                LOGGER.info("From remote service has been retrieved new updated statement with size: " + remoteResponse.size());
+            }
 
             //insert remote response to db
             if (!remoteResponse.isEmpty()) {
@@ -88,7 +110,7 @@ public class UserService {
 
         //transactions selection by specified time range (e.g. statistic for specified month)
         List<StatementResponseDto> localResponse = statementRepository.getStatementInRange(userFromDb.getUsername(),
-                localTimeToTimesamp(beginDate).getTime()/1000, localTimeToTimesamp(endDate).getTime()/1000);
+                localTimeToTimesamp(beginDate, false).getTime()/1000, localTimeToTimesamp(endDate, true).getTime()/1000);
         LOGGER.info("From db has been selected statement with size: " + localResponse.size());
 
         return fillResult(localResponse);
@@ -104,17 +126,17 @@ public class UserService {
         return dateFormat.format(date);
     }
 
-    private Timestamp localTimeToTimesamp(String time) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yy");
-        Timestamp timestamp = null;
-        try {
-            Date parsedDate = dateFormat.parse(time);
-            timestamp = new java.sql.Timestamp(parsedDate.getTime());
-        } catch (ParseException e) {
-            e.printStackTrace();
+    private Timestamp localTimeToTimesamp(String time, boolean endOfDay) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy");
+        LocalDate formatDate = LocalDate.parse(time, formatter);
+        if (endOfDay) {
+            return Timestamp.valueOf(formatDate.atTime(LocalTime.MAX));
+        } else {
+            return Timestamp.valueOf(formatDate.atTime(LocalTime.MIN));
         }
-        return timestamp;
     }
+
+
 
     //TODO: upgrade date with localDateTime:
 //    LocalDateTime  localDate = LocalDateTime.now();//For reference
