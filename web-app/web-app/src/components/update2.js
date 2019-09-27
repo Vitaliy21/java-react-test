@@ -7,13 +7,11 @@ class Update2 extends React.Component {
           this.state = {merchants: []}
           this.headers = [
           	{ key: 'merchantName', label: 'Merchant name' },
-//          	{ key: 'username', label: 'Username' },
-//          	{ key: 'category', label: 'Category' },
           ];
       }
 
       componentDidMount() {
-  		fetch('http://localhost:9999/user/search/' + this.props.match.params.username + '/' + this.props.match.params.category)
+  		fetch(process.env.REACT_APP_BACKEND_URL + '/user/search/' + this.props.match.params.username + '/' + this.props.match.params.category)
   			.then(response => {
   				return response.json();
   			}).then(result => {

@@ -24,7 +24,7 @@ class Update3 extends React.Component {
   }
   handleSubmit(event) {
 	  event.preventDefault();
-	  fetch('http://localhost:9999/user/updateCategory', {
+	  fetch(process.env.REACT_APP_BACKEND_URL + '/user/updateCategory', {
 			method: 'POST',
 			body: JSON.stringify({
 							username:this.state.username,

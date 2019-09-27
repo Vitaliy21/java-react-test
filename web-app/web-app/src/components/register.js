@@ -16,7 +16,7 @@ class Register extends React.Component {
   }
   handleSubmit(event) {
 	  event.preventDefault();
-	  fetch('http://localhost:9999/user/register', {
+	  fetch(process.env.REACT_APP_BACKEND_URL + '/user/register', {
 			method: 'POST',
 			body: JSON.stringify({
 							username: this.state.username,

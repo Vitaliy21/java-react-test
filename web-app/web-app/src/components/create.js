@@ -15,7 +15,7 @@ class Create extends React.Component {
   }
   handleSubmit(event) {
 	  event.preventDefault();
-	  fetch('http://localhost:9999/website/add', {
+	  fetch(process.env.REACT_APP_BACKEND_URL +'/website/add', {
 			method: 'POST',
 			body: JSON.stringify({
 							title: this.state.title,

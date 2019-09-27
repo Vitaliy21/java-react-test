@@ -14,7 +14,7 @@ class Websites extends React.Component {
 	}
 
 	componentDidMount() {
-		fetch('http://localhost:9999/websites')
+		fetch(process.env.REACT_APP_BACKEND_URL + '/websites')
 			.then(response => {
 				return response.json();
 			}).then(result => {
@@ -27,11 +27,11 @@ class Websites extends React.Component {
 
 	deleteWebsite(id) {
 		if(window.confirm("Are you sure want to delete?")) {
-			fetch('http://localhost:9999/website/delete/' + id)
+			fetch(process.env.REACT_APP_BACKEND_URL + '/website/delete/' + id)
 				.then(response => {
 					if(response.status === 200) {
 						alert("Website deleted successfully");
-                                                fetch('http://localhost:9999/websites')
+                                                fetch(process.env.REACT_APP_BACKEND_URL + '/websites')
 						.then(response => {
 							return response.json();
 						}).then(result => {

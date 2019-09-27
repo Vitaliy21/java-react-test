@@ -18,7 +18,7 @@ class Login extends React.Component {
   }
   handleSubmit(event) {
 	  event.preventDefault();
-	  fetch('http://localhost:9999/user/login', {
+	  fetch(process.env.REACT_APP_BACKEND_URL + '/user/login', {
 			method: 'POST',
 			body: JSON.stringify({
 							username: this.state.username,

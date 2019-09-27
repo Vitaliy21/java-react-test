@@ -13,7 +13,7 @@ class Users extends React.Component {
     }
 
     componentDidMount() {
-		fetch('http://localhost:9999/user/users')
+		fetch(process.env.REACT_APP_BACKEND_URL + '/user/users')
 			.then(response => {
 				return response.json();
 			}).then(result => {

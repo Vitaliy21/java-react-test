@@ -33,7 +33,7 @@ class Welcome extends React.Component {
           () => this.tick(),
           1000
         );
-        fetch('http://localhost:9999/user/details/' + this.state.user.username +
+        fetch(process.env.REACT_APP_BACKEND_URL + '/user/details/' + this.state.user.username +
                         '/' + this.state.firstDay.toLocaleDateString("nl",{year:"2-digit",month:"2-digit", day:"2-digit"}) +
                         '/' + this.state.currentDate.toLocaleDateString("nl",{year:"2-digit",month:"2-digit", day:"2-digit"}))
         	.then(response => {
@@ -44,7 +44,7 @@ class Welcome extends React.Component {
         			details1:result
         		});
         	});
-        fetch('http://localhost:9999/user/details/' + this.state.user.username +
+        fetch(process.env.REACT_APP_BACKEND_URL + '/user/details/' + this.state.user.username +
                         '/' + this.state.firstDayPrevMonth.toLocaleDateString("nl",{year:"2-digit",month:"2-digit", day:"2-digit"}) +
                         '/' + this.state.lastDayPrevMonth.toLocaleDateString("nl",{year:"2-digit",month:"2-digit", day:"2-digit"}))
             .then(response => {
