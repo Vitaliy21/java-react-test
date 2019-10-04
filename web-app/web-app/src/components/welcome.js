@@ -68,7 +68,9 @@ class Welcome extends React.Component {
       }
 
     render() {
-        return (<div id='head' align='center'>
+        return (
+                <div id='head' align='center'>
+                    <Link to="/">Home</Link>
                     <h1>Привет, {this.state.user.username}!</h1>
                     <h1>Сегодня {this.state.currentDate.toLocaleDateString()}.   Сейчас {this.state.currentDate.toLocaleTimeString()}.</h1>
 
@@ -124,7 +126,6 @@ class Welcome extends React.Component {
                         <td><Link to={`/update2/${this.state.user.username}/${this.state.category.undefined}`}>Edit</Link></td>
                       </tr>
                     </table>
-
                 </div>
         );
     }

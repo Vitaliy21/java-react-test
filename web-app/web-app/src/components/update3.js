@@ -44,7 +44,7 @@ class Update3 extends React.Component {
   render() {
     return (
 			<div id="container">
-			  <Link to="/">Websites</Link>
+			  <button onClick={this.props.history.goBack}>Back</button>
 				  <p/>
 				  <form onSubmit={this.handleSubmit}>
 					<input type="hidden" name="username" value={this.state.username}/>
