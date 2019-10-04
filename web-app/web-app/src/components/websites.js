@@ -4,90 +4,14 @@ import { Link } from 'react-router-dom';
 class Websites extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {websites: []};
-		this.headers = [
-			{ key: 'id', label: 'Id'},
-			{ key: 'title', label: 'Title' },
-			{ key: 'url', label: 'URL' }
-		];
-		this.deleteWebsite = this.deleteWebsite.bind(this);
-	}
-
-	componentDidMount() {
-		fetch(process.env.REACT_APP_BACKEND_URL + '/websites')
-			.then(response => {
-				return response.json();
-			}).then(result => {
-				console.log(result);
-				this.setState({
-					websites:result
-				});
-			});
-	}
-
-	deleteWebsite(id) {
-		if(window.confirm("Are you sure want to delete?")) {
-			fetch(process.env.REACT_APP_BACKEND_URL + '/website/delete/' + id)
-				.then(response => {
-					if(response.status === 200) {
-						alert("Website deleted successfully");
-                                                fetch(process.env.REACT_APP_BACKEND_URL + '/websites')
-						.then(response => {
-							return response.json();
-						}).then(result => {
-							console.log(result);
-							this.setState({
-								websites:result
-							});
-						});
-					}
-			 });
-		}
 	}
 
 	render() {
 		return (
 			<div id="container">
-				<Link to="/create">Add Website</Link>
-				<p/>
 				<Link to="/register">Register user</Link>
 				<p/>
-				<table>
-					<thead>
-						<tr>
-						{
-							this.headers.map(function(h) {
-								return (
-									<th key = {h.key}>{h.label}</th>
-								)
-							})
-						}
-						  <th>Actions</th>
-						</tr>
-					</thead>
-					<tbody>
-						{
-							this.state.websites.map(function(item, key) {
-							return (
-								<tr key = {key}>
-								  <td>{item.id}</td>
-								  <td>{item.title}</td>
-								  <td>{item.url}</td>
-								  <td>
-										<Link to={`/update/${item.id}`}>Edit</Link>
-
-										<a href="javascript:void(0);" onClick={this.deleteWebsite.bind(this, item.id)}>Delete</a>
-								  </td>
-								</tr>
-											)
-							}.bind(this))
-						}
-					</tbody>
-				</table>
 				<Link to="/login">Login</Link>
-                <p/>
-                <Link to="/users">See all users</Link>
-                <p/>
 			</div>
 		)
 	}

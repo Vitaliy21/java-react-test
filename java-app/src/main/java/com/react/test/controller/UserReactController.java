@@ -7,9 +7,13 @@ import com.react.test.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -72,9 +76,19 @@ public class UserReactController {
     }
 
     @PostMapping("/user/updateCategory")
-    public ResponseEntity<?> updateWebsite(@RequestBody UserCategoryDto userCategoryDto) throws Exception {
+    public ResponseEntity<?> updateWebsite(@RequestBody UserCategoryDto userCategoryDto) {
         userService.updateCategory(userCategoryDto);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurerAdapter() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**").allowedOrigins("*");
+            }
+        };
     }
 
 }

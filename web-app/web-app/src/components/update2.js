@@ -25,7 +25,7 @@ class Update2 extends React.Component {
   	render() {
       		return (
       			<div id="container">
-      			<Link to="/">Websites</Link>
+      			<button onClick={this.props.history.goBack}>Back</button>
                   <p/>
       				<table>
       					<thead>

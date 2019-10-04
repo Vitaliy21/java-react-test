@@ -55,8 +55,7 @@ class Login extends React.Component {
   render() {
     return (
 		<div id="container">
-		  <Link to="/">Websites</Link>
-			  <p/>
+		      <button onClick={this.props.history.goBack}>Back</button>
 			  <form onSubmit={this.handleSubmit}>
 				<p>
 					<label>Username:</label>

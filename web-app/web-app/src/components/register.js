@@ -40,8 +40,7 @@ class Register extends React.Component {
   render() {
     return (
 		<div id="container">
-		  <Link to="/">Websites</Link>
-			  <p/>
+		      <button onClick={this.props.history.goBack}>Back</button>
 			  <form onSubmit={this.handleSubmit}>
 				<p>
 					<label>Username:</label>
@@ -64,6 +63,10 @@ class Register extends React.Component {
 					<input type="submit" value="Register" />
 				</p>
 			  </form>
+			  <p>&nbsp;</p>
+			  <p>
+			    <Link to="/login">Login</Link>
+			  </p>
 		   </div>
     );
   }
