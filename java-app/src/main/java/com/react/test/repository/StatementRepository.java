@@ -3,7 +3,6 @@ package com.react.test.repository;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.react.test.config.AppConfiguration;
-import com.react.test.dto.CategoryType;
 import com.react.test.dto.StatementResponseDto;
 import com.react.test.dto.UserDto;
 import org.slf4j.Logger;
@@ -34,10 +33,10 @@ public class StatementRepository {
     }
 
     public void saveStatements(UserDto user, List<StatementResponseDto> newStatements) {
-        Map<String, CategoryType> categories = user.getCategories();
+        Map<String, String> categories = user.getCategories();
         newStatements.forEach(transaction -> {
             if(categories.get(transaction.getDescription()) == null) {
-                transaction.setCategoryType(CategoryType.UNDEFINED);
+                transaction.setCategoryType("UNDEFINED");
             } else {
                 transaction.setCategoryType(categories.get(transaction.getDescription()));
             }
@@ -62,13 +61,13 @@ public class StatementRepository {
         return maxObject.getTime()+1;
     }
 
-    public List<StatementResponseDto> getMerchantsByCategory(String username, CategoryType categoryType) {
+    public List<StatementResponseDto> getMerchantsByCategory(String username, String categoryType) {
         Query query = Query.query(Criteria.where("categoryType").is(categoryType));
         List<StatementResponseDto> statements = mongoTemplate.find(query, StatementResponseDto.class, username + "_statements");
         return statements;
     }
 
-    public void updateCategoryForMerchant(String username, String merchant, CategoryType category) {
+    public void updateCategoryForMerchant(String username, String merchant, String category) {
         Query query = Query.query(Criteria.where("description").is(merchant));
         Update update = new Update();
         update.set("categoryType", category);

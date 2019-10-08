@@ -3,21 +3,21 @@ package com.react.test.dto;
 import java.math.BigDecimal;
 
 public class UserDetailsDto {
-    CategoryType categoryType;
+    String categoryType;
     BigDecimal currentAmount;
     BigDecimal previousAmount;
 
-    public UserDetailsDto(CategoryType categoryType, BigDecimal currentAmount, BigDecimal previousAmount) {
+    public UserDetailsDto(String categoryType, BigDecimal currentAmount, BigDecimal previousAmount) {
         this.categoryType = categoryType;
         this.currentAmount = currentAmount;
         this.previousAmount = previousAmount;
     }
 
-    public CategoryType getCategoryType() {
+    public String getCategoryType() {
         return categoryType;
     }
 
-    public void setCategoryType(CategoryType categoryType) {
+    public void setCategoryType(String categoryType) {
         this.categoryType = categoryType;
     }
 

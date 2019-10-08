@@ -1,6 +1,5 @@
 package com.react.test.controller;
 
-import com.react.test.dto.CategoryType;
 import com.react.test.dto.UserCategoryDto;
 import com.react.test.dto.UserDetailsDto;
 import com.react.test.dto.UserDto;
@@ -76,14 +75,20 @@ public class UserReactController {
     }
 
     @PostMapping("/user/updateCategory")
-    public ResponseEntity<?> updateWebsite(@RequestBody UserCategoryDto userCategoryDto) {
+    public ResponseEntity<?> updateCategory(@RequestBody UserCategoryDto userCategoryDto) {
         userService.updateCategory(userCategoryDto);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/user/createCategory")
+    public ResponseEntity<?> createCategory(@RequestBody UserCategoryDto userCategoryDto) {
+        userService.createCategory(userCategoryDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping(value = "/user/categories/{username}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<?> categories(@PathVariable String username) {
-        Set<CategoryType> result;
+        Set<String> result;
         try {
             result = userService.getCategoriesByUsername(username);
         } catch (Exception e) {

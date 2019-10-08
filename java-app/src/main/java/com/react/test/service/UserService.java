@@ -126,10 +126,10 @@ public class UserService {
         LOGGER.info("From db has been selected statement for current month with size: " + localResponseForCurrent.size());
         LOGGER.info("From db has been selected statement for previous month with size: " + localResponseForPrevious.size());
 
-        Map<CategoryType, BigDecimal> mapCurrent = fillResult(localResponseForCurrent);
-        Map<CategoryType, BigDecimal> mapPrevious = fillResult(localResponseForPrevious);
+        Map<String, BigDecimal> mapCurrent = fillResult(localResponseForCurrent);
+        Map<String, BigDecimal> mapPrevious = fillResult(localResponseForPrevious);
 
-        Set<CategoryType> categoriesByUsername = sortForView(getCategoriesByUsername(username));
+        Set<String> categoriesByUsername = sortForView(getCategoriesByUsername(username));
         categoriesByUsername.forEach(e-> {
             result.add(new UserDetailsDto(e, mapCurrent.get(e), mapPrevious.get(e)));
         });
@@ -137,10 +137,10 @@ public class UserService {
         return result;
     }
 
-    private Set<CategoryType> sortForView(Set<CategoryType> categoriesByUsername) {
-        Set<CategoryType> sorted = categoriesByUsername.stream().collect(Collectors.toCollection(TreeSet::new));
-        Set<CategoryType> result = new LinkedHashSet<>(sorted);
-        result.add(CategoryType.UNDEFINED);
+    private Set<String> sortForView(Set<String> categoriesByUsername) {
+        Set<String> sorted = categoriesByUsername.stream().collect(Collectors.toCollection(TreeSet::new));
+        Set<String> result = new LinkedHashSet<>(sorted);
+        result.add("UNDEFINED");
         return result;
     }
 
@@ -154,8 +154,8 @@ public class UserService {
         return dateFormat.format(date);
     }
 
-    private Map<CategoryType, BigDecimal> fillResult(List<StatementResponseDto> localResponse) {
-        Map<CategoryType, BigDecimal> result = new LinkedHashMap<>();
+    private Map<String, BigDecimal> fillResult(List<StatementResponseDto> localResponse) {
+        Map<String, BigDecimal> result = new LinkedHashMap<>();
         List<StatementResponseDto> resultList = localResponse.stream()
                 //filter positive transactions. should be counted spending(negative) transactions only
                 .filter(elem -> elem.getAmount()<0)
@@ -173,8 +173,7 @@ public class UserService {
 
     public List<String> getMerchantsByCategory(String username, String category) {
         List<String> result = new ArrayList<>();
-        CategoryType categoryType = getCategory(category);
-        List<StatementResponseDto> merchantsByCategory = statementRepository.getMerchantsByCategory(username, categoryType);
+        List<StatementResponseDto> merchantsByCategory = statementRepository.getMerchantsByCategory(username, category);
         Map<String, BigDecimal> calculatedMerchants = calculateByMerchantName(merchantsByCategory);
         calculatedMerchants.forEach((key, value) -> {
             //TODO: for now no need calculate prices
@@ -200,17 +199,6 @@ public class UserService {
         return result;
     }
 
-    private CategoryType getCategory(String category) {
-        switch (category) {
-            case "OTHER": return CategoryType.OTHER;
-            case "FUN": return CategoryType.FUN;
-            case "TAXI": return CategoryType.TAXI;
-            case "SUPERMARKETS": return CategoryType.SUPERMARKETS;
-            case "RESTAURANTS": return CategoryType.RESTAURANTS;
-            default: return CategoryType.UNDEFINED;
-        }
-    }
-
     public void updateCategory(UserCategoryDto userCategoryDto) {
         UserDto userDto = userRepository.findByUsername(userCategoryDto.getUsername());
         userDto.getCategories().put(userCategoryDto.getMerchant(), userCategoryDto.getCategory());
@@ -219,8 +207,15 @@ public class UserService {
         statementRepository.updateCategoryForMerchant(userCategoryDto.getUsername(), userCategoryDto.getMerchant(), userCategoryDto.getCategory());
     }
 
-    public Set<CategoryType> getCategoriesByUsername(String username) {
-        Collection<CategoryType> result = userRepository.findByUsername(username).getCategories().values();
+    public void createCategory(UserCategoryDto userCategoryDto) {
+        UserDto userDto = userRepository.findByUsername(userCategoryDto.getUsername());
+        userDto.getNewCategories().add(userCategoryDto.getCategory());
+
+        userRepository.updateUser(userDto);
+    }
+
+    public Set<String> getCategoriesByUsername(String username) {
+        Collection<String> result = userRepository.findByUsername(username).getCategories().values();
         return new HashSet<>(result);
     }
 }
