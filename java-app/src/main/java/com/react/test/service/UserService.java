@@ -208,4 +208,9 @@ public class UserService {
 
         statementRepository.updateCategoryForMerchant(userCategoryDto.getUsername(), userCategoryDto.getMerchant(), userCategoryDto.getCategory());
     }
+
+    public Set<CategoryType> getCategoriesByUsername(String username) {
+        Collection<CategoryType> result = userRepository.findByUsername(username).getCategories().values();
+        return new HashSet<>(result);
+    }
 }

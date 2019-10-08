@@ -18,6 +18,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -79,6 +80,18 @@ public class UserReactController {
     public ResponseEntity<?> updateWebsite(@RequestBody UserCategoryDto userCategoryDto) {
         userService.updateCategory(userCategoryDto);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/user/categories/{username}", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> categories(@PathVariable String username) {
+        Set<CategoryType> result;
+        try {
+            result = userService.getCategoriesByUsername(username);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @Bean
