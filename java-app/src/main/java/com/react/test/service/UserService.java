@@ -1,9 +1,6 @@
 package com.react.test.service;
 
-import com.react.test.dto.CategoryType;
-import com.react.test.dto.StatementResponseDto;
-import com.react.test.dto.UserCategoryDto;
-import com.react.test.dto.UserDto;
+import com.react.test.dto.*;
 import com.react.test.repository.StatementRepository;
 import com.react.test.repository.UserRepository;
 import org.slf4j.Logger;
@@ -15,8 +12,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -105,15 +101,47 @@ public class UserService {
         }
     }
 
-    public Map<CategoryType, BigDecimal> getUserData(String username, String beginDate, String endDate) {
+    public List<UserDetailsDto> getUserData(String username) {
+
+        List<UserDetailsDto> result = new ArrayList<>();
+
         UserDto userFromDb = userRepository.findByUsername(username);
 
-        //transactions selection by specified time range (e.g. statistic for specified month)
-        List<StatementResponseDto> localResponse = statementRepository.getStatementInRange(userFromDb.getUsername(),
-                localTimeToTimesamp(beginDate, false).getTime()/1000, localTimeToTimesamp(endDate, true).getTime()/1000);
-        LOGGER.info("From db has been selected statement with size: " + localResponse.size());
+        YearMonth now = YearMonth.now();
+        LocalDate currentStartDay = now.atDay(1);
+        LocalDate currentEndDay = now.atEndOfMonth();
+        LocalDate previousStart = now.minusMonths(1).atDay(1);
+        LocalDate previousEnd = now.atDay(1).minusDays(1);
 
-        return fillResult(localResponse);
+        Timestamp currentMonthBeginDate = Timestamp.valueOf(currentStartDay.atStartOfDay());
+        Timestamp currentMonthEndDate = Timestamp.valueOf(currentEndDay.atTime(23, 59));
+        Timestamp previousMonthBeginDate = Timestamp.valueOf(previousStart.atStartOfDay());
+        Timestamp previousMonthEndDate = Timestamp.valueOf(previousEnd.atTime(23, 59));
+
+        //transactions selection by specified time range (e.g. statistic for specified month)
+        List<StatementResponseDto> localResponseForCurrent = statementRepository.getStatementInRange(userFromDb.getUsername(),
+                currentMonthBeginDate.getTime()/1000, currentMonthEndDate.getTime()/1000);
+        List<StatementResponseDto> localResponseForPrevious = statementRepository.getStatementInRange(userFromDb.getUsername(),
+                previousMonthBeginDate.getTime()/1000, previousMonthEndDate.getTime()/1000);
+        LOGGER.info("From db has been selected statement for current month with size: " + localResponseForCurrent.size());
+        LOGGER.info("From db has been selected statement for previous month with size: " + localResponseForPrevious.size());
+
+        Map<CategoryType, BigDecimal> mapCurrent = fillResult(localResponseForCurrent);
+        Map<CategoryType, BigDecimal> mapPrevious = fillResult(localResponseForPrevious);
+
+        Set<CategoryType> categoriesByUsername = sortForView(getCategoriesByUsername(username));
+        categoriesByUsername.forEach(e-> {
+            result.add(new UserDetailsDto(e, mapCurrent.get(e), mapPrevious.get(e)));
+        });
+
+        return result;
+    }
+
+    private Set<CategoryType> sortForView(Set<CategoryType> categoriesByUsername) {
+        Set<CategoryType> sorted = categoriesByUsername.stream().collect(Collectors.toCollection(TreeSet::new));
+        Set<CategoryType> result = new LinkedHashSet<>(sorted);
+        result.add(CategoryType.UNDEFINED);
+        return result;
     }
 
     private void mapLocalTime(List<StatementResponseDto> remoteResponse) {
@@ -125,24 +153,6 @@ public class UserService {
         SimpleDateFormat dateFormat = new SimpleDateFormat(localTimeFormat);
         return dateFormat.format(date);
     }
-
-    private Timestamp localTimeToTimesamp(String time, boolean endOfDay) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy");
-        LocalDate formatDate = LocalDate.parse(time, formatter);
-        if (endOfDay) {
-            return Timestamp.valueOf(formatDate.atTime(LocalTime.MAX));
-        } else {
-            return Timestamp.valueOf(formatDate.atTime(LocalTime.MIN));
-        }
-    }
-
-
-
-    //TODO: upgrade date with localDateTime:
-//    LocalDateTime  localDate = LocalDateTime.now();//For reference
-//    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-//    String formattedString = localDate.format(formatter);
-//    localDate.withDayOfMonth(1);
 
     private Map<CategoryType, BigDecimal> fillResult(List<StatementResponseDto> localResponse) {
         Map<CategoryType, BigDecimal> result = new LinkedHashMap<>();
