@@ -130,9 +130,7 @@ public class UserService {
         Map<String, BigDecimal> mapPrevious = fillResult(localResponseForPrevious);
 
         Set<String> categoriesByUsername = sortForView(getCategoriesByUsername(username));
-        categoriesByUsername.forEach(e-> {
-            result.add(new UserDetailsDto(e, mapCurrent.get(e), mapPrevious.get(e)));
-        });
+        categoriesByUsername.forEach(e-> result.add(new UserDetailsDto(e, mapCurrent.get(e), mapPrevious.get(e))));
 
         return result;
     }
@@ -215,7 +213,9 @@ public class UserService {
     }
 
     public Set<String> getCategoriesByUsername(String username) {
-        Collection<String> result = userRepository.findByUsername(username).getCategories().values();
+        UserDto user = userRepository.findByUsername(username);
+        List<String> result = new ArrayList<>(user.getCategories().values());
+        result.addAll(user.getNewCategories());
         return new HashSet<>(result);
     }
 }

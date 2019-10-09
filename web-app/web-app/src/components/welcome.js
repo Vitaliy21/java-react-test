@@ -79,6 +79,8 @@ class Welcome extends React.Component {
                         </tbody>
                     </table>
 
+                    <Link to={`/create/${this.state.user.username}`}>Create category</Link>
+
                 </div>
         );
     }
