@@ -199,7 +199,7 @@ public class UserService {
 
     public void updateCategory(UserCategoryDto userCategoryDto) {
         UserDto userDto = userRepository.findByUsername(userCategoryDto.getUsername());
-        userDto.getCategories().put(userCategoryDto.getMerchant(), userCategoryDto.getCategory());
+        userDto.getCategories().put(userCategoryDto.getMerchant().replace(".", ""), userCategoryDto.getCategory());
         userRepository.updateUser(userDto);
 
         statementRepository.updateCategoryForMerchant(userCategoryDto.getUsername(), userCategoryDto.getMerchant(), userCategoryDto.getCategory());
