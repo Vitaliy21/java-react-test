@@ -3,7 +3,7 @@ package com.react.test.dto;
 public class UserCategoryDto {
     private String username;
     private String merchant;
-    private CategoryType category;
+    private String category;
 
     public String getUsername() {
         return username;
@@ -21,11 +21,11 @@ public class UserCategoryDto {
         this.merchant = merchant;
     }
 
-    public CategoryType getCategory() {
+    public String getCategory() {
         return category;
     }
 
-    public void setCategory(CategoryType category) {
+    public void setCategory(String category) {
         this.category = category;
     }
 }

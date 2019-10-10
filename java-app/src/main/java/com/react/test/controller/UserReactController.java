@@ -1,7 +1,7 @@
 package com.react.test.controller;
 
-import com.react.test.dto.CategoryType;
 import com.react.test.dto.UserCategoryDto;
+import com.react.test.dto.UserDetailsDto;
 import com.react.test.dto.UserDto;
 import com.react.test.service.UserService;
 import org.slf4j.Logger;
@@ -15,9 +15,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -58,11 +56,11 @@ public class UserReactController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/user/details/{username}/{beginDate}/{endDate}", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> details(@PathVariable String username, @PathVariable String beginDate, @PathVariable String endDate) {
-        Map<CategoryType, BigDecimal> result;
+    @GetMapping(value = "/user/details/{username}", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> details(@PathVariable String username) {
+        List<UserDetailsDto> result;
         try {
-            result = userService.getUserData(username, beginDate, endDate);
+            result = userService.getUserData(username);
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
@@ -77,14 +75,20 @@ public class UserReactController {
     }
 
     @PostMapping("/user/updateCategory")
-    public ResponseEntity<?> updateWebsite(@RequestBody UserCategoryDto userCategoryDto) {
+    public ResponseEntity<?> updateCategory(@RequestBody UserCategoryDto userCategoryDto) {
         userService.updateCategory(userCategoryDto);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/user/createCategory")
+    public ResponseEntity<?> createCategory(@RequestBody UserCategoryDto userCategoryDto) {
+        userService.createCategory(userCategoryDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping(value = "/user/categories/{username}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<?> categories(@PathVariable String username) {
-        Set<CategoryType> result;
+        Set<String> result;
         try {
             result = userService.getCategoriesByUsername(username);
         } catch (Exception e) {

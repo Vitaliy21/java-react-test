@@ -1,6 +1,8 @@
 package com.react.test.dto;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class UserDto {
@@ -9,7 +11,8 @@ public class UserDto {
     private String email;
     private String token;
     private String password;
-    private Map<String, CategoryType> categories = new LinkedHashMap<>();
+    private Map<String, String> categories = new LinkedHashMap<>();
+    private List<String> newCategories = new ArrayList<>();
 
     public String getId() {
         return id;
@@ -43,11 +46,11 @@ public class UserDto {
         this.password = password;
     }
 
-    public Map<String, CategoryType> getCategories() {
+    public Map<String, String> getCategories() {
         return categories;
     }
 
-    public void setCategories(Map<String, CategoryType> categories) {
+    public void setCategories(Map<String, String> categories) {
         this.categories = categories;
     }
 
@@ -57,5 +60,13 @@ public class UserDto {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<String> getNewCategories() {
+        return newCategories;
+    }
+
+    public void setNewCategories(List<String> newCategories) {
+        this.newCategories = newCategories;
     }
 }

@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
+import Select from 'react-select';
 
 class Update3 extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {username: '', merchant: '', category: ''};
+    this.state = {username: '', merchant: '', category: '', categories: []};
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -14,13 +15,20 @@ class Update3 extends React.Component {
         username: this.props.match.params.username,
         merchant: this.props.match.params.merchant,
         category: this.props.match.params.category
-    })
+    });
+    fetch(process.env.REACT_APP_BACKEND_URL + '/user/categories/' + this.props.match.params.username)
+        .then(response => {
+            return response.json();
+        }).then(result => {
+            console.log(result);
+            this.setState({
+                categories:result
+            });
+    });
 
   }
-  handleChange(event) {
-	  const state = this.state
-	  state[event.target.name] = event.target.value
-	  this.setState(state);
+  handleChange(selection, action) {
+      this.state.category = this.state.categories[selection.value];
   }
   handleSubmit(event) {
 	  event.preventDefault();
@@ -54,14 +62,13 @@ class Update3 extends React.Component {
 						</p>
 						<p>
 							<label>Category Type:</label>
-							<select name="category" value={this.state.category} onChange={this.handleChange} placeholder="Category">
-                                        <option value="UNDEFINED">Undefined</option>
-                                        <option value="OTHER">Other</option>
-                                        <option value="RESTAURANTS">Restaurants</option>
-                                        <option value="SUPERMARKETS">Supermarkets</option>
-                                        <option value="TAXI">Taxi</option>
-                                        <option value="FUN">Fun</option>
-                                      </select>
+							<Select
+                                name="selectedWires"
+                                options={this.state.categories.map((option, idx) => ({
+                                    value: idx,
+                                    label: option
+                                }))}
+                                onChange={(selection, action) => this.handleChange(selection, action)}/>
 						</p>
 						<p>
 							<input type="submit" value="Submit" />

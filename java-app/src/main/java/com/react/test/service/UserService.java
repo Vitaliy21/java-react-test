@@ -1,9 +1,6 @@
 package com.react.test.service;
 
-import com.react.test.dto.CategoryType;
-import com.react.test.dto.StatementResponseDto;
-import com.react.test.dto.UserCategoryDto;
-import com.react.test.dto.UserDto;
+import com.react.test.dto.*;
 import com.react.test.repository.StatementRepository;
 import com.react.test.repository.UserRepository;
 import org.slf4j.Logger;
@@ -15,8 +12,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -105,15 +101,45 @@ public class UserService {
         }
     }
 
-    public Map<CategoryType, BigDecimal> getUserData(String username, String beginDate, String endDate) {
+    public List<UserDetailsDto> getUserData(String username) {
+
+        List<UserDetailsDto> result = new ArrayList<>();
+
         UserDto userFromDb = userRepository.findByUsername(username);
 
-        //transactions selection by specified time range (e.g. statistic for specified month)
-        List<StatementResponseDto> localResponse = statementRepository.getStatementInRange(userFromDb.getUsername(),
-                localTimeToTimesamp(beginDate, false).getTime()/1000, localTimeToTimesamp(endDate, true).getTime()/1000);
-        LOGGER.info("From db has been selected statement with size: " + localResponse.size());
+        YearMonth now = YearMonth.now();
+        LocalDate currentStartDay = now.atDay(1);
+        LocalDate currentEndDay = now.atEndOfMonth();
+        LocalDate previousStart = now.minusMonths(1).atDay(1);
+        LocalDate previousEnd = now.atDay(1).minusDays(1);
 
-        return fillResult(localResponse);
+        Timestamp currentMonthBeginDate = Timestamp.valueOf(currentStartDay.atStartOfDay());
+        Timestamp currentMonthEndDate = Timestamp.valueOf(currentEndDay.atTime(23, 59));
+        Timestamp previousMonthBeginDate = Timestamp.valueOf(previousStart.atStartOfDay());
+        Timestamp previousMonthEndDate = Timestamp.valueOf(previousEnd.atTime(23, 59));
+
+        //transactions selection by specified time range (e.g. statistic for specified month)
+        List<StatementResponseDto> localResponseForCurrent = statementRepository.getStatementInRange(userFromDb.getUsername(),
+                currentMonthBeginDate.getTime()/1000, currentMonthEndDate.getTime()/1000);
+        List<StatementResponseDto> localResponseForPrevious = statementRepository.getStatementInRange(userFromDb.getUsername(),
+                previousMonthBeginDate.getTime()/1000, previousMonthEndDate.getTime()/1000);
+        LOGGER.info("From db has been selected statement for current month with size: " + localResponseForCurrent.size());
+        LOGGER.info("From db has been selected statement for previous month with size: " + localResponseForPrevious.size());
+
+        Map<String, BigDecimal> mapCurrent = fillResult(localResponseForCurrent);
+        Map<String, BigDecimal> mapPrevious = fillResult(localResponseForPrevious);
+
+        Set<String> categoriesByUsername = sortForView(getCategoriesByUsername(username));
+        categoriesByUsername.forEach(e-> result.add(new UserDetailsDto(e, mapCurrent.get(e), mapPrevious.get(e))));
+
+        return result;
+    }
+
+    private Set<String> sortForView(Set<String> categoriesByUsername) {
+        Set<String> sorted = categoriesByUsername.stream().collect(Collectors.toCollection(TreeSet::new));
+        Set<String> result = new LinkedHashSet<>(sorted);
+        result.add("UNDEFINED");
+        return result;
     }
 
     private void mapLocalTime(List<StatementResponseDto> remoteResponse) {
@@ -126,26 +152,8 @@ public class UserService {
         return dateFormat.format(date);
     }
 
-    private Timestamp localTimeToTimesamp(String time, boolean endOfDay) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy");
-        LocalDate formatDate = LocalDate.parse(time, formatter);
-        if (endOfDay) {
-            return Timestamp.valueOf(formatDate.atTime(LocalTime.MAX));
-        } else {
-            return Timestamp.valueOf(formatDate.atTime(LocalTime.MIN));
-        }
-    }
-
-
-
-    //TODO: upgrade date with localDateTime:
-//    LocalDateTime  localDate = LocalDateTime.now();//For reference
-//    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-//    String formattedString = localDate.format(formatter);
-//    localDate.withDayOfMonth(1);
-
-    private Map<CategoryType, BigDecimal> fillResult(List<StatementResponseDto> localResponse) {
-        Map<CategoryType, BigDecimal> result = new LinkedHashMap<>();
+    private Map<String, BigDecimal> fillResult(List<StatementResponseDto> localResponse) {
+        Map<String, BigDecimal> result = new LinkedHashMap<>();
         List<StatementResponseDto> resultList = localResponse.stream()
                 //filter positive transactions. should be counted spending(negative) transactions only
                 .filter(elem -> elem.getAmount()<0)
@@ -163,8 +171,7 @@ public class UserService {
 
     public List<String> getMerchantsByCategory(String username, String category) {
         List<String> result = new ArrayList<>();
-        CategoryType categoryType = getCategory(category);
-        List<StatementResponseDto> merchantsByCategory = statementRepository.getMerchantsByCategory(username, categoryType);
+        List<StatementResponseDto> merchantsByCategory = statementRepository.getMerchantsByCategory(username, category);
         Map<String, BigDecimal> calculatedMerchants = calculateByMerchantName(merchantsByCategory);
         calculatedMerchants.forEach((key, value) -> {
             //TODO: for now no need calculate prices
@@ -190,17 +197,6 @@ public class UserService {
         return result;
     }
 
-    private CategoryType getCategory(String category) {
-        switch (category) {
-            case "OTHER": return CategoryType.OTHER;
-            case "FUN": return CategoryType.FUN;
-            case "TAXI": return CategoryType.TAXI;
-            case "SUPERMARKETS": return CategoryType.SUPERMARKETS;
-            case "RESTAURANTS": return CategoryType.RESTAURANTS;
-            default: return CategoryType.UNDEFINED;
-        }
-    }
-
     public void updateCategory(UserCategoryDto userCategoryDto) {
         UserDto userDto = userRepository.findByUsername(userCategoryDto.getUsername());
         userDto.getCategories().put(userCategoryDto.getMerchant(), userCategoryDto.getCategory());
@@ -209,8 +205,17 @@ public class UserService {
         statementRepository.updateCategoryForMerchant(userCategoryDto.getUsername(), userCategoryDto.getMerchant(), userCategoryDto.getCategory());
     }
 
-    public Set<CategoryType> getCategoriesByUsername(String username) {
-        Collection<CategoryType> result = userRepository.findByUsername(username).getCategories().values();
+    public void createCategory(UserCategoryDto userCategoryDto) {
+        UserDto userDto = userRepository.findByUsername(userCategoryDto.getUsername());
+        userDto.getNewCategories().add(userCategoryDto.getCategory());
+
+        userRepository.updateUser(userDto);
+    }
+
+    public Set<String> getCategoriesByUsername(String username) {
+        UserDto user = userRepository.findByUsername(username);
+        List<String> result = new ArrayList<>(user.getCategories().values());
+        result.addAll(user.getNewCategories());
         return new HashSet<>(result);
     }
 }

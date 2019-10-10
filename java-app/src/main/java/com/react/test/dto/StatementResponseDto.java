@@ -13,7 +13,7 @@ public class StatementResponseDto {
     private int commissionRate;
     private int cashbackAmount;
     private int balance;
-    private CategoryType categoryType;
+    private String categoryType;
     private String comment;
 
     public String getId() {
@@ -104,11 +104,11 @@ public class StatementResponseDto {
         this.balance = balance;
     }
 
-    public CategoryType getCategoryType() {
+    public String getCategoryType() {
         return categoryType;
     }
 
-    public void setCategoryType(CategoryType categoryType) {
+    public void setCategoryType(String categoryType) {
         this.categoryType = categoryType;
     }
 
