@@ -35,6 +35,9 @@ public class StatementRepository {
     public void saveStatements(UserDto user, List<StatementResponseDto> newStatements) {
         Map<String, String> categories = user.getCategories();
         newStatements.forEach(transaction -> {
+            if (transaction.getDescription().contains("/")) {
+                transaction.setDescription(transaction.getDescription().replace("/", ""));
+            }
             if(categories.get(transaction.getDescription()) == null) {
                 transaction.setCategoryType("UNDEFINED");
             } else {
