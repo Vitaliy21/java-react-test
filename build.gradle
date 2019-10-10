@@ -2,7 +2,7 @@ allprojects  {
     apply plugin: 'eclipse'
     apply plugin: 'idea'
     group 'com.react.test'
-    version '2.0-SNAPSHOT'
+    version '2.1-SNAPSHOT'
 }
 subprojects {
     
