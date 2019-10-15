@@ -12,7 +12,9 @@ class Welcome extends React.Component {
                 ];
         this.state = {currentDate: new Date(),
                       user: {username: '', token: '', password: ''},
-                      details: []
+                      details: [],
+                      totalPrevious: 0,
+                      totalCurrent: 0
                       }
       }
 
@@ -31,6 +33,7 @@ class Welcome extends React.Component {
         		this.setState({
         			details:result
         		});
+
         	});
       }
 
@@ -44,7 +47,19 @@ class Welcome extends React.Component {
         });
       }
 
+      calculateTotal() {
+            var sumPrevious = 0;
+            var sumCurrent = 0;
+            this.state.details.forEach(function(obj){
+              sumPrevious += obj.previousAmount;
+              sumCurrent += obj.currentAmount;
+            });
+            this.state.totalPrevious = Math.round(sumPrevious);
+            this.state.totalCurrent = Math.round(sumCurrent);
+      }
+
     render() {
+        this.calculateTotal()
         return (
                 <div id='head' align='center'>
                     <Link to="/">Home</Link>
@@ -76,6 +91,11 @@ class Welcome extends React.Component {
                                                 )
                                 }.bind(this))
                             }
+                            <tr>
+                              <td><b>TOTAL:</b></td>
+                              <td><b>{this.state.totalPrevious}</b></td>
+                              <td><b>{this.state.totalCurrent}</b></td>
+                            </tr>
                         </tbody>
                     </table>
 
